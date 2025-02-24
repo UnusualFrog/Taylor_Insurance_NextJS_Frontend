@@ -7,8 +7,6 @@ const navigation = [
   { name: 'Get a Quote', href: 'get_quote', current: false },
   { name: 'Account', href: 'account', current: false },
   { name: 'Contact', href: 'contact', current: false },
-  { name: 'Login', href: 'login', current: false },
-  { name: 'Register', href: 'register', current: false },
 ]
 
 function classNames(...classes) {
@@ -63,6 +61,26 @@ export default function RootLayout({ children }) {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+              <a
+                        key="Login"
+                        href="login"
+                        className={classNames(
+                          'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'rounded-md px-3 py-2 text-sm font-medium',
+                        )}
+                      >
+                        Login
+                      </a>
+                      <a
+                        key="Register"
+                        href="register"
+                        className={classNames(
+                          'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'rounded-md px-3 py-2 text-sm font-medium',
+                        )}
+                      >
+                        Register
+                      </a>
                 <button
                   type="button"
                   className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
