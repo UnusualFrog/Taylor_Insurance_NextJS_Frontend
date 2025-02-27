@@ -82,11 +82,15 @@ export default function Account() {
               <ul className="space-y-2">
                 <li className="flex justify-between items-center border p-2 rounded-md">
                   <span>Quote #12345</span>
-                  <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  <a href="tempQuote">
+                    <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  </a>
                 </li>
                 <li className="flex justify-between items-center border p-2 rounded-md">
                   <span>Quote #67890</span>
-                  <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  <a href="tempQuote">
+                    <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  </a>
                 </li>
               </ul>
             )}
@@ -94,11 +98,15 @@ export default function Account() {
               <ul className="space-y-2">
                 <li className="flex justify-between items-center border p-2 rounded-md">
                   <span>Policy #54321</span>
-                  <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  <a href="tempPolicy">
+                    <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  </a>
                 </li>
                 <li className="flex justify-between items-center border p-2 rounded-md">
                   <span>Policy #09876</span>
-                  <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  <a href="tempPolicy">
+                    <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  </a>
                 </li>
               </ul>
             )}
