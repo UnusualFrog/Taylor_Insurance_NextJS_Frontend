@@ -27,7 +27,6 @@ export default function Home() {
             <button className="w-[150px] h-[50px] text-lg font-medium text-gray-700 bg-white border rounded-md shadow-sm hover:bg-gray-50 focus:relative">
               <a href="loginRegister">Login / Register</a>
             </button>
-
           </div>
         </div>
 
