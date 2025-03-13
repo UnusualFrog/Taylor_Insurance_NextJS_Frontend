@@ -25,7 +25,7 @@ export default function Home() {
 
           <div className="flex gap-2">
             <button className="w-[150px] h-[50px] text-lg font-medium text-gray-700 bg-white border rounded-md shadow-sm hover:bg-gray-50 focus:relative">
-              <a href="loginRegister">Login / Register </a>
+              <a href="loginRegister">Login / Register</a>
             </button>
           </div>
         </div>
