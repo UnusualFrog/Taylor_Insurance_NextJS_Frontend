@@ -28,7 +28,7 @@ export default function Account() {
         {/* Flex container for sidebar menu and content display */}
         <div className="flex gap-10 w-full justify-center mt-10">
           {/* Sidebar menu */}
-          <div className="w-[200px] border-r border-gray-300 pr-4">
+          <div className="w-[200px]  border-gray-300 pr-4">
             <ul className="space-y-4">
               {menuOptions.map((option) => (
                 <li
@@ -82,13 +82,13 @@ export default function Account() {
               <ul className="space-y-2">
                 <li className="flex justify-between items-center border p-2 rounded-md">
                   <span>Quote #12345</span>
-                  <a href="tempQuote">
+                  <a href="quote">
                     <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
                   </a>
                 </li>
                 <li className="flex justify-between items-center border p-2 rounded-md">
                   <span>Quote #67890</span>
-                  <a href="tempQuote">
+                  <a href="quote">
                     <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
                   </a>
                 </li>
@@ -98,13 +98,13 @@ export default function Account() {
               <ul className="space-y-2">
                 <li className="flex justify-between items-center border p-2 rounded-md">
                   <span>Policy #54321</span>
-                  <a href="tempPolicy">
+                  <a href="policy">
                     <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
                   </a>
                 </li>
                 <li className="flex justify-between items-center border p-2 rounded-md">
                   <span>Policy #09876</span>
-                  <a href="tempPolicy">
+                  <a href="policy">
                     <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
                   </a>
                 </li>
