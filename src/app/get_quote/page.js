@@ -18,9 +18,7 @@ export default function GetQuote() {
   return (
     <div className="flex justify-center items-center min-h-screen p-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col items-center">
-      <div className="w-[500px] bg-white border rounded-md shadow-sm mb-4">
-          <h1 className="text-2xl font-bold text-gray-800 py-4 text-center">Get Quote</h1>
-      </div>
+     
       <div className="w-[400px]">
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
           <div className="mb-4">
@@ -152,7 +150,7 @@ export default function GetQuote() {
           <div className="flex items-center justify-between">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="w-[200px] h-[50px] text-lg font-medium text-white bg-gray-900 rounded-md shadow-lg flex items-center justify-center hover:bg-gray-700 transition"
             >
               Get Quote
             </button>

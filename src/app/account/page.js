@@ -14,21 +14,14 @@ export default function Account() {
   ];
 
   return (
-    <div className="items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col items-center">
-        <div className="w-[500px] bg-white border rounded-md shadow-sm mb-3">
-          <h1 className="text-2xl font-bold text-gray-800 py-4 text-center">Account</h1>
-        </div>
-
-        {/* Customer Name Section */}
-        <div className="w-[500px] bg-white border rounded-md shadow-sm text-center p-4">
-          <h2 className="text-xl font-semibold text-gray-700">John Doe</h2>
-        </div>
-
+    <div className="flex justify-center items-center min-h-screen p-6">
+      <div className="w-[700px] bg-white rounded-lg shadow-lg p-8">
+        <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">Account</h1>
+        
         {/* Flex container for sidebar menu and content display */}
-        <div className="flex gap-10 w-full justify-center mt-10">
+        <div className="flex">
           {/* Sidebar menu */}
-          <div className="w-[200px] border-r border-gray-300 pr-4">
+          <div className="w-[200px] pr-4 border-r border-gray-300">
             <ul className="space-y-4">
               {menuOptions.map((option) => (
                 <li
@@ -43,40 +36,32 @@ export default function Account() {
               ))}
             </ul>
           </div>
-
+          
           {/* Content Display */}
-          <div className="w-[400px] p-6 bg-white border rounded-md shadow-sm">
-          {selectedSection === "Account Info" && (
+          <div className="w-[400px] pl-6">
+            {selectedSection === "Account Info" && (
               <div className="space-y-2">
-              <div>
-                <label className="text-sm font-semibold block mb-1">ID:</label>
-                <div className="border p-2 rounded-md">123456</div>
-              </div>
-              
-              <div>
-                <label className="text-sm font-semibold block mb-1">Primary Phone:</label>
-                <div className="flex items-center gap-2">
-                  <input className="flex-1 border p-2 rounded-md" value="(123) 456-7890" readOnly />
-                  <PencilIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                <div>
+                  <label className="text-sm font-semibold block mb-1">ID:</label>
+                  <div className="border p-2 rounded-md">123456</div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-semibold block mb-1">Primary Phone:</label>
+                  <div className="flex items-center gap-2">
+                    <input className="flex-1 border p-2 rounded-md" value="(123) 456-7890" readOnly />
+                    <PencilIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-semibold block mb-1">Email:</label>
+                  <div className="flex items-center gap-2">
+                    <input className="flex-1 border p-2 rounded-md" value="user@example.com" readOnly />
+                    <PencilIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                  </div>
                 </div>
               </div>
-              
-              <div>
-                <label className="text-sm font-semibold block mb-1">Email:</label>
-                <div className="flex items-center gap-2">
-                  <input className="flex-1 border p-2 rounded-md" value="user@example.com" readOnly />
-                  <PencilIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
-                </div>
-              </div>
-              
-              <div>
-                <label className="text-sm font-semibold block mb-1">Primary Address:</label>
-                <div className="flex items-center gap-2">
-                  <input className="flex-1 border p-2 rounded-md" value="123 Main St, City, State" readOnly />
-                  <PencilIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
-                </div>
-              </div>
-            </div>
             )}
             {selectedSection === "Active Quotes" && (
               <ul className="space-y-2">
@@ -86,56 +71,30 @@ export default function Account() {
                     <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
                   </a>
                 </li>
-                <li className="flex justify-between items-center border p-2 rounded-md">
-                  <span>Quote #67890</span>
-                  <a href="tempQuote">
-                    <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
-                  </a>
-                </li>
               </ul>
             )}
             {selectedSection === "Active Policies" && (
               <ul className="space-y-2">
-                <li className="flex justify-between items-center border p-2 rounded-md">
-                  <span>Policy #54321</span>
-                  <a href="tempPolicy">
-                    <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
-                  </a>
-                </li>
-                <li className="flex justify-between items-center border p-2 rounded-md">
-                  <span>Policy #09876</span>
-                  <a href="tempPolicy">
-                    <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
-                  </a>
-                </li>
-              </ul>
+              <li className="flex justify-between items-center border p-2 rounded-md">
+                <span>Policy #6789</span>
+                <a href="tempPolicy">
+                  <EyeIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                </a>
+              </li>
+            </ul>
             )}
             {selectedSection === "Password Change" && (
               <form className="flex flex-col gap-4">
                 <label className="text-sm font-semibold">Current Password:</label>
-                <input
-                  type="password"
-                  className="border p-2 rounded-md"
-                />
+                <input type="password" className="border p-2 rounded-md" />
                 <label className="text-sm font-semibold">New Password:</label>
-                <input
-                  type="password"
-                  className="border p-2 rounded-md"
-                />
-                <label className="text-sm font-semibold">Confirm New Password:</label>
-                <input
-                  type="password"
-                  className="border p-2 rounded-md"
-                />
-                <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">
-                  Change Password
-                </button>
+                <input type="password" className="border p-2 rounded-md" />
+                <button type="submit" className="bg-gray-900 text-white p-2 rounded-md">Change Password</button>
               </form>
             )}
           </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
+      </div>
     </div>
   );
 }
