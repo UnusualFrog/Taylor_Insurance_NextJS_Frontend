@@ -147,7 +147,6 @@ export default function GetQuote() {
                 </div>
               </>
             )}
-
             <div className="flex items-center justify-between">
               <button
                 type="submit"
@@ -159,6 +158,7 @@ export default function GetQuote() {
           </form>
           <p className="text-center text-gray-800 text-xs">&copy;2025 Insurance Corp. All rights reserved.</p>
         </div>
+
       </main>
     </div>
   );

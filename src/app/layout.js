@@ -71,14 +71,14 @@ export default function RootLayout({ children }) {
                       >
                         Login / Register
                       </a>
-                <button
+                {/* <button
                   type="button"
                   className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
                   <BellIcon aria-hidden="true" className="size-6" />
-                </button>
+                </button> */}
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
@@ -99,20 +99,20 @@ export default function RootLayout({ children }) {
                   >
                     <MenuItem>
                       <a
-                        href="#"
+                        href="account"
                         className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
                       >
                         Your Profile
                       </a>
                     </MenuItem>
-                    <MenuItem>
+                    {/* <MenuItem>
                       <a
                         href="#"
                         className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
                       >
                         Settings
                       </a>
-                    </MenuItem>
+                    </MenuItem> */}
                     <MenuItem>
                       <a
                         href="#"
