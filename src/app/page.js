@@ -1,40 +1,40 @@
-
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col items-center">
-        <div className="w-[500px] bg-white border rounded-md shadow-sm mt-40">
-          <h1 className="text-2xl font-bold text-gray-800 py-4 text-center">Home</h1>
+    <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-r from-blue-500 to-indigo-600 pt-40">
+      {/* Centered Container */}
+      <div className="flex items-center w-full max-w-6xl px-8 gap-8">
+
+        {/* Logo Section */}
+        <div className="flex-shrink-0 w-full sm:w-1/3 flex justify-center">
+          <Image 
+            src="/TInsurance-landing-logo.png" 
+            alt="Company Logo" 
+            className="w-full max-w-[500px] sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px] xl:max-w-[800px] h-auto"
+            width={800} // You can set a default width and height for the image
+            height={800} 
+          />
         </div>
 
-        <div className="p-4 flex flex-col items-center gap-2">
-          <button className="w-[150px] h-[50px] text-lg font-medium text-gray-700 bg-white border rounded-md shadow-sm hover:bg-gray-50 focus:relative">
-            <a href="get_quote">Get a Quote</a>
-          </button>
-
-          <div className="flex gap-2">
-            <button className="w-[150px] h-[50px] text-lg font-medium text-gray-700 bg-white border rounded-md shadow-sm hover:bg-gray-50 focus:relative">
-              <a href="contact">Contact</a>
-            </button>
-
-            <button className="w-[150px] h-[50px] text-lg font-medium text-gray-700 bg-white border rounded-md shadow-sm hover:bg-gray-50 focus:relative">
-              <a href="account">Account</a>
-            </button>
+        {/* Navigation Section */}
+        <div className="flex flex-col justify-center items-center space-y-6 w-full sm:w-2/3">
+          <div className="text-center text-black text-2xl font-semibold">
+            <p>Taylor-Made Protection for You.</p>
+            <p>Get A Quote or Login Below to Get Started</p>
           </div>
 
-          <div className="flex gap-2">
-            <button className="w-[150px] h-[50px] text-lg font-medium text-gray-700 bg-white border rounded-md shadow-sm hover:bg-gray-50 focus:relative">
-              <a href="loginRegister">Login / Register</a>
-            </button>
+          <div className="flex items-center justify-center gap-3 pt-6 w-full">
+            <a href="get_quote" className="w-[200px] h-[50px] text-lg font-medium text-white bg-gray-900 rounded-md shadow-lg flex items-center justify-center hover:bg-gray-700 transition">
+              Get a Quote
+            </a>
+            <a href="loginRegister" className="w-[200px] h-[50px] text-lg font-medium text-white bg-gray-900 rounded-md shadow-lg flex items-center justify-center hover:bg-gray-700 transition">
+              Login / Register
+            </a>
           </div>
         </div>
 
-
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-
-      </footer>
+      </div>
     </div>
   );
 }
