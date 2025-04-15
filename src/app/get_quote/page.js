@@ -1,138 +1,91 @@
 'use client'
-import { useState } from "react";
-import Image from "next/image";
+
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 export default function GetQuote() {
-  const [insuranceType, setInsuranceType] = useState("home");
-  const [formData, setFormData] = useState({});
+  const [insuranceType, setInsuranceType] = useState("home")
+  const [formData, setFormData] = useState({})
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitted Data:", formData);
-    alert("Quote submitted successfully!");
-  };
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">
-      <main className="w-full max-w-md bg-white/90 shadow-xl rounded-2xl p-8">
-        <Image
-          src="/TInsurance-landing-logo.png"
-          alt="Taylor Insurance Logo"
-          width={100}
-          height={100}
-          className="mx-auto mb-4"
-        />
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-          Request a Quote
-        </h1>
-        <p className="text-center text-gray-600 mb-6">
-          Choose your insurance type and fill out the form to receive your quote.
-        </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">
+      <Card className="w-full max-w-4xl bg-white/90 shadow-xl rounded-xl">
+        <CardHeader className="pt-6 text-center">
+          <CardTitle className="text-2xl text-gray-800">Get a Quote</CardTitle>
+        </CardHeader>
 
-        {/* Insurance Type Selector */}
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Select Insurance Type:</label>
-          <select
-            className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            value={insuranceType}
-            onChange={(e) => setInsuranceType(e.target.value)}
-          >
-            <option value="home">Home Insurance</option>
-            <option value="auto">Auto Insurance</option>
-          </select>
-        </div>
+        <CardContent className="px-6 pb-8">
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Select Insurance Type:</label>
+            <Select value={insuranceType} onValueChange={setInsuranceType}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Insurance Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="home">Home Insurance</SelectItem>
+                <SelectItem value="auto">Auto Insurance</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Dynamic Quote Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {insuranceType === "home" ? (
-            <>
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Home Value</label>
-                <input
-                  type="number"
-                  name="homeValue"
-                  onChange={handleChange}
-                  required
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Dwelling Type</label>
-                <input
-                  type="text"
-                  name="dwellingType"
-                  onChange={handleChange}
-                  required
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Heating Type</label>
-                <select
-                  name="heatingType"
-                  onChange={handleChange}
-                  required
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
-                >
-                  <option value="">Select Heating Type</option>
-                  <option value="OIL">OIL</option>
-                  <option value="ELECTRIC">ELECTRIC</option>
-                  <option value="WOOD">WOOD</option>
-                  <option value="OTHER">OTHER</option>
-                </select>
-              </div>
-            </>
-          ) : (
-            <>
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Make</label>
-                <input
-                  type="text"
-                  name="make"
-                  onChange={handleChange}
-                  required
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Model</label>
-                <input
-                  type="text"
-                  name="model"
-                  onChange={handleChange}
-                  required
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Year</label>
-                <input
-                  type="number"
-                  name="year"
-                  onChange={handleChange}
-                  required
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
-                />
-              </div>
-            </>
-          )}
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {insuranceType === "home" ? (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Home Value</label>
+                  <Input type="number" name="homeValue" onChange={handleChange} placeholder="e.g. 250000" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Dwelling Type</label>
+                  <Input type="text" name="dwellingType" onChange={handleChange} placeholder="e.g. Bungalow" />
+                </div>
+                <div className="col-span-full">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Heating Type</label>
+                  <Select name="heatingType" onValueChange={(val) => handleChange({ target: { name: "heatingType", value: val } })}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select heating type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="OIL">OIL</SelectItem>
+                      <SelectItem value="ELECTRIC">ELECTRIC</SelectItem>
+                      <SelectItem value="WOOD">WOOD</SelectItem>
+                      <SelectItem value="OTHER">OTHER</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Make</label>
+                  <Input type="text" name="make" onChange={handleChange} placeholder="e.g. Toyota" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                  <Input type="text" name="model" onChange={handleChange} placeholder="e.g. Corolla" />
+                </div>
+                <div className="col-span-full">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                  <Input type="number" name="year" onChange={handleChange} placeholder="e.g. 2022" />
+                </div>
+              </>
+            )}
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition"
-          >
-            Get Quote
-          </button>
-        </form>
-
-        <p className="text-center text-gray-500 text-xs mt-6">
-          ©2025 Taylor Insurance. All rights reserved.
-        </p>
-      </main>
+            <div className="col-span-full">
+              <Button type="submit" className="w-full h-[50px] text-lg font-semibold mt-4">
+                Get Quote
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
