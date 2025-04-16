@@ -1,5 +1,5 @@
 'use client'
-
+import Cookies from 'js-cookie'
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -55,6 +55,45 @@ export default function Account() {
     }
   }, [selectedSection])
 
+  // check for and handle user log in
+  const [isLoggedIn, setIsLoggedLogIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [customerId, setCustomerId] = useState('');
+  const [checkedAuth, setCheckedAuth] = useState(false);
+
+  useEffect(() => {
+    const loggedin = Cookies.get('loggedin') === 'true';
+    const user = Cookies.get('username');
+    const id = Cookies.get('csutomerId');
+
+    if(loggedin && user) {
+      setIsLoggedLogIn(true);
+      setUsername(user);
+      setCustomerId(id);
+    }
+
+    setCheckedAuth(true);
+  }, [])
+
+  // Wait until cookies are checked before rendering 
+  // TODO: remove this or make it pretty
+  if (!checkedAuth) {
+    return <div>Loading...</div>
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center">
+        <div>
+          <h1 className="text-2xl font-bold">You're not logged in.</h1>
+          <p className="mt-2 text-gray-600">
+            Please <a href="/login" className="text-blue-500 underline">log in</a> or <a href="/register" className="text-blue-500 underline">register</a>.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex items-start justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-10">
       <Card className="w-full max-w-5xl bg-white/90 shadow-xl rounded-xl">
@@ -96,11 +135,13 @@ export default function Account() {
           </div>
 
           {/* Main Panel */}
+          {/* TODO: update all this based on the users logged in info, right now only username is updated. 
+          also remove this as a form/ don't let them edit it. */}
           <div className="w-full">
             {selectedSection === "info" && (
               <form className="space-y-4">
                 <Input placeholder="Full Name" />
-                <Input placeholder="Username" />
+                <Input placeholder={username} />
                 <Input type="date" />
                 <div className="space-y-2 border rounded p-4">
                   <Input placeholder="Street" />

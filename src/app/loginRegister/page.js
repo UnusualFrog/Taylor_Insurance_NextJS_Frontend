@@ -1,5 +1,6 @@
 'use client'
-
+import Cookies from 'js-cookie';
+import { loginCustomer } from "@/lib/auth"
 import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -24,7 +25,7 @@ export default function LoginRegister() {
   const router = useRouter()
   const [formType, setFormType] = useState("login")
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
     confirmPassword: ''
   })
@@ -33,38 +34,42 @@ export default function LoginRegister() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
 
-    if (formType === "register") {
+    if (formType === "register") { // TODO: Handle registration functionality, focusing on login now.
       if (formData.password !== formData.confirmPassword) {
-        alert("Passwords do not match!")
+        alert("Passwords do not match!"); // TODO: update to a nicer look maybe
         return
       }
 
-      if (users.find(user => user.email === formData.email)) {
-        alert("User already exists!")
-        return
+      const data = await registerCustomer({
+        // Fields for when register is put in here
+      })
+
+      if (data.success) {
+        console.log("register success");
+      } else {
+        alert(data.message || "Registration Failed");
       }
 
-      users.push({ email: formData.email, password: formData.password })
-      localStorage.setItem("users", JSON.stringify(users))
-      localStorage.setItem("currentUser", JSON.stringify({ email: formData.email }))
-      router.push("/account")
     } else {
-      const found = users.find(user =>
-        user.email === formData.email && user.password === formData.password
-      )
+      const data = await loginCustomer(formData.username, formData.password);
 
-      if (!found) {
-        alert("Invalid login.")
-        setFormData({ email: '', password: '', confirmPassword: '' })
-        return
+      if (data.message && data.customerId) {
+        console.log("successful login");
+        console.log(data);
+        // Lets bake some cookies, lol.
+        Cookies.set('loggedin', 'true');
+        Cookies.set('role', data.role);
+        Cookies.set('customerId', data.customerId);
+        Cookies.set('username', data.username);
+        // send them over to the account page.
+        router.push("/account"); 
+      } else {
+        console.log(data);
+        alert("login failed");
       }
-
-      localStorage.setItem("currentUser", JSON.stringify(found))
-      router.push("/account")
     }
   }
 
@@ -98,14 +103,14 @@ export default function LoginRegister() {
               </SelectContent>
             </Select>
           </div>
-
+          {/* TODO: register and log in need to be two separate forms, they have different required info and function */}
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">User Name</label>
               <Input
-                type="email"
-                name="email"
-                placeholder="Email Address"
+                type="username"
+                name="username"
+                placeholder="User Name"
                 value={formData.email}
                 onChange={handleChange}
                 required
