@@ -24,6 +24,9 @@ export default function ViewCustomers() {
     const [viewMode, setViewMode] = useState('policies')
     const [policies, setPolicies] = useState({ home: [], auto: [] })
     const [quotes, setQuotes] = useState({ home: [], auto: [] })
+    const [createMode, setCreateMode] = useState(false)
+    const [quoteFormData, setQuoteFormData] = useState({ liability: '', packagedQuote: false, make: '', model: '', year: '' })
+
   
     useEffect(() => {
       const loggedIn = Cookies.get('loggedin') === 'true'
@@ -135,6 +138,11 @@ export default function ViewCustomers() {
                 <Button onClick={() => setViewMode('quotes')} className={viewMode === 'quotes' ? 'border-2 border-blue-600' : ''}>
                   View Quotes
                 </Button>
+                <Button onClick={() => setViewMode('create')} className={viewMode === 'create' ? 'border-2 border-blue-600' : ''}>
+                    Create Quote
+                </Button>
+
+
               </div>
 
               <div className="flex gap-2 flex-wrap mb-4">
@@ -147,58 +155,202 @@ export default function ViewCustomers() {
               </div>
 
               {viewMode === 'policies' ? (
-                <>
-                  <h3 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Policies' : 'Auto Policies'}</h3>
-                  {policies[selectedSection].length === 0 ? (
-                    <p>No policies found.</p>
-                  ) : (
-                    <table className="w-full text-sm border">
-                      <thead>
-                        <tr>
-                          <th className="border px-2 py-1">ID</th>
-                          <th className="border px-2 py-1">Type</th>
-                          <th className="border px-2 py-1">Expires</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {policies[selectedSection].map(p => (
-                          <tr key={p.id}>
-                            <td className="border px-2 py-1">{p.id}</td>
-                            <td className="border px-2 py-1">{p.type}</td>
-                            <td className="border px-2 py-1">{p.expiresAt}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </>
-              ) : (
-                <>
-                  <h3 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Quotes' : 'Auto Quotes'}</h3>
-                  {quotes[selectedSection].length === 0 ? (
-                    <p>No quotes found.</p>
-                  ) : (
-                    <table className="w-full text-sm border">
-                      <thead>
-                        <tr>
-                          <th className="border px-2 py-1">ID</th>
-                          <th className="border px-2 py-1">Type</th>
-                          <th className="border px-2 py-1">Expires</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {quotes[selectedSection].map(q => (
-                          <tr key={q.id}>
-                            <td className="border px-2 py-1">{q.id}</td>
-                            <td className="border px-2 py-1">{q.type}</td>
-                            <td className="border px-2 py-1">{q.expiresAt}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </>
-              )}
+                  <>
+                    <h3 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Policies' : 'Auto Policies'}</h3>
+{policies[selectedSection].length === 0 ? (
+  <p>No policies found.</p>
+) : (
+  <table className="w-full border text-sm mb-6">
+    <thead>
+      <tr className="bg-gray-100">
+        <th className="border px-4 py-2">ID</th>
+        <th className="border px-4 py-2">Premium</th>
+        {selectedSection === 'auto' ? (
+          <>
+            <th className="border px-4 py-2">Make</th>
+            <th className="border px-4 py-2">Model</th>
+            <th className="border px-4 py-2">Year</th>
+          </>
+        ) : (
+          <th className="border px-4 py-2">Address</th>
+        )}
+        <th className="border px-4 py-2">Effective</th>
+        <th className="border px-4 py-2">Expires</th>
+      </tr>
+    </thead>
+    <tbody>
+      {policies[selectedSection].map(p => {
+        const premium = p.premium?.toFixed(2)
+        const auto = p.auto
+        const home = p.home
+        const address = home?.address
+          ? `${home.address.unit ? home.address.unit + '-' : ''}${home.address.street}, ${home.address.city}, ${home.address.province} ${home.address.postalCode}`
+          : ''
+
+        return (
+          <tr key={p.id}>
+            <td className="border px-4 py-2">{p.id}</td>
+            <td className="border px-4 py-2">${premium}</td>
+            {selectedSection === 'auto' ? (
+              <>
+                <td className="border px-4 py-2">{auto?.make}</td>
+                <td className="border px-4 py-2">{auto?.model}</td>
+                <td className="border px-4 py-2">{auto?.year}</td>
+              </>
+            ) : (
+              <td className="border px-4 py-2">{address}</td>
+            )}
+            <td className="border px-4 py-2">{p.effectiveDate}</td>
+            <td className="border px-4 py-2">{p.endDate}</td>
+          </tr>
+        )
+      })}
+    </tbody>
+  </table>
+)}
+
+                  </>
+                ) : viewMode === 'quotes' ? (
+                  <>
+                    <h3 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Quotes' : 'Auto Quotes'}</h3>
+{quotes[selectedSection].length === 0 ? (
+  <p>No quotes found.</p>
+) : (
+  <table className="w-full border text-sm mb-6">
+    <thead>
+      <tr className="bg-gray-100">
+        <th className="border px-4 py-2">ID</th>
+        <th className="border px-4 py-2">Premium</th>
+        {selectedSection === 'auto' ? (
+          <>
+            <th className="border px-4 py-2">Make</th>
+            <th className="border px-4 py-2">Model</th>
+            <th className="border px-4 py-2">Year</th>
+          </>
+        ) : (
+          <th className="border px-4 py-2">Address</th>
+        )}
+        <th className="border px-4 py-2">Generated</th>
+        <th className="border px-4 py-2">Expires In</th>
+      </tr>
+    </thead>
+    <tbody>
+      {quotes[selectedSection].map(q => {
+        const premium = q.premium?.toFixed(2)
+        const auto = q.auto
+        const home = q.home
+        const address = home?.address
+          ? `${home.address.unit ? home.address.unit + '-' : ''}${home.address.street}, ${home.address.city}, ${home.address.province} ${home.address.postalCode}`
+          : ''
+
+        const expiryDate = new Date(q.generationDate)
+        expiryDate.setFullYear(expiryDate.getFullYear() + 1)
+
+        const timeRemaining = (() => {
+          const diff = expiryDate - new Date()
+          if (diff <= 0) return "Expired"
+          const mins = Math.floor(diff / (1000 * 60)) % 60
+          const hrs = Math.floor(diff / (1000 * 60 * 60)) % 24
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+          return `${days}d ${hrs}h ${mins}m`
+        })()
+
+        return (
+          <tr key={q.id}>
+            <td className="border px-4 py-2">{q.id}</td>
+            <td className="border px-4 py-2">${premium}</td>
+            {selectedSection === 'auto' ? (
+              <>
+                <td className="border px-4 py-2">{auto?.make}</td>
+                <td className="border px-4 py-2">{auto?.model}</td>
+                <td className="border px-4 py-2">{auto?.year}</td>
+              </>
+            ) : (
+              <td className="border px-4 py-2">{address}</td>
+            )}
+            <td className="border px-4 py-2">{q.generationDate}</td>
+            <td className="border px-4 py-2">{timeRemaining}</td>
+          </tr>
+        )
+      })}
+    </tbody>
+  </table>
+)}
+
+                  </>
+                ) : (
+                  // This is the create mode section
+                  <div className="mt-6">
+                    <h3 className="font-semibold mb-2">Create {selectedSection === 'home' ? 'Home' : 'Auto'} Quote</h3>
+                    <form
+                      className="space-y-4"
+                      onSubmit={(e) => {
+                        e.preventDefault()
+                        console.log('Submit quote data:', quoteFormData)
+                        alert('Quote created (not hooked up yet)')
+                      }}
+                    >
+                      {selectedSection === 'home' ? (
+                        <>
+                          <div>
+                            <label className="block text-sm">Liability ($)</label>
+                            <input
+                              type="number"
+                              className="w-full border px-2 py-1 rounded"
+                              name="liability"
+                              value={quoteFormData.liability}
+                              onChange={(e) => setQuoteFormData({ ...quoteFormData, liability: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm">Packaged Quote?</label>
+                            <select
+                              className="w-full border px-2 py-1 rounded"
+                              value={quoteFormData.packagedQuote}
+                              onChange={(e) => setQuoteFormData({ ...quoteFormData, packagedQuote: e.target.value === 'true' })}
+                            >
+                              <option value="false">No</option>
+                              <option value="true">Yes</option>
+                            </select>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div>
+                            <label className="block text-sm">Make</label>
+                            <input
+                              className="w-full border px-2 py-1 rounded"
+                              name="make"
+                              value={quoteFormData.make}
+                              onChange={(e) => setQuoteFormData({ ...quoteFormData, make: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm">Model</label>
+                            <input
+                              className="w-full border px-2 py-1 rounded"
+                              name="model"
+                              value={quoteFormData.model}
+                              onChange={(e) => setQuoteFormData({ ...quoteFormData, model: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm">Year</label>
+                            <input
+                              type="number"
+                              className="w-full border px-2 py-1 rounded"
+                              name="year"
+                              value={quoteFormData.year}
+                              onChange={(e) => setQuoteFormData({ ...quoteFormData, year: e.target.value })}
+                            />
+                          </div>
+                        </>
+                      )}
+                      <Button type="submit">Submit Quote</Button>
+                    </form>
+                  </div>
+                )}
+
             </div>
           )}
         </CardContent>

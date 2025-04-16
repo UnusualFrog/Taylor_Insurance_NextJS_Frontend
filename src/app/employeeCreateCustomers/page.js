@@ -1,7 +1,7 @@
-// file: app/employeePortal/createCustomer/page.js
 'use client'
 
-import { useState } from 'react'
+import Cookies from 'js-cookie'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -14,29 +14,10 @@ import {
 } from '@/components/ui/card'
 
 export default function CreateCustomerPage() {
-    const [authorized, setAuthorized] = useState(false)
-      const [checkedAuth, setCheckedAuth] = useState(false)
-      const router = useRouter()
-    
-      useEffect(() => {
-        const loggedIn = Cookies.get('loggedin') === 'true'
-        const role = Cookies.get('role')
-    
-        if (loggedIn && role === 'employee') {
-          setAuthorized(true)
-        } 
-        else if(!loggedIn) {
-          router.push('/employeeLogIn')
-        }
-        else {
-            router.push('/unauthorized')
-        }
-    
-        setCheckedAuth(true)
-      }, [])
-    
-      if (!checkedAuth) return <div>Loading...</div>
-      if (!authorized) return null
+  const router = useRouter()
+  const [authorized, setAuthorized] = useState(false)
+  const [checkedAuth, setCheckedAuth] = useState(false)
+
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -55,6 +36,21 @@ export default function CreateCustomerPage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState(false)
 
+  useEffect(() => {
+    const loggedIn = Cookies.get('loggedin') === 'true'
+    const role = Cookies.get('role')
+
+    if (loggedIn && role === 'employee') {
+      setAuthorized(true)
+    } else if (!loggedIn) {
+      router.push('/employeeLogIn')
+    } else {
+      router.push('/unauthorized')
+    }
+
+    setCheckedAuth(true)
+  }, [])
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
@@ -69,55 +65,72 @@ export default function CreateCustomerPage() {
     }
 
     try {
-      // 1. Create the address
-      const addressRes = await fetch('http://localhost:8080/v1/address', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          unit: formData.unit,
-          street: formData.street,
-          city: formData.city,
-          province: formData.province,
-          postalCode: formData.postalCode,
-        })
-      })
+      // Step 1: Create address
+      const addressUrl = new URL("http://localhost:8080/v1/addresses")
+      addressUrl.searchParams.append("unit", formData.unit || 0)
+      addressUrl.searchParams.append("street", formData.street)
+      addressUrl.searchParams.append("city", formData.city)
+      addressUrl.searchParams.append("province", formData.province)
+      addressUrl.searchParams.append("postalCode", formData.postalCode)
 
+      const addressRes = await fetch(addressUrl.toString(), {
+        method: "POST"
+      })
       const addressData = await addressRes.json()
-      if (!addressData.success || !addressData.object) {
-        throw new Error('Address creation failed')
+
+      if (!addressData.success || !addressData.object?.id) {
+        setError(true)
+        setMessage("Failed to create address: " + addressData.message)
+        return
       }
 
       const addressId = addressData.object.id
 
-      // 2. Register customer with the address ID
-      const customerRes = await fetch(`http://localhost:8080/v1/register/${addressId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          username: formData.username,
-          password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          birthday: formData.birthday,
-          email: formData.email,
-        })
-      })
+      // Step 2: Create customer
+      const customerUrl = new URL("http://localhost:8080/v1/customers/register")
+      customerUrl.searchParams.append("firstName", formData.firstName)
+      customerUrl.searchParams.append("lastName", formData.lastName)
+      customerUrl.searchParams.append("birthday", formData.birthday)
+      customerUrl.searchParams.append("email", formData.email)
+      customerUrl.searchParams.append("username", formData.username)
+      customerUrl.searchParams.append("password", formData.password)
+      customerUrl.searchParams.append("addressId", addressId)
 
+      const customerRes = await fetch(customerUrl.toString(), {
+        method: "POST"
+      })
       const customerData = await customerRes.json()
+
       if (customerData.success) {
         setError(false)
-        setMessage("Customer successfully registered!")
+        setMessage("Customer registered successfully!")
+        setFormData({
+          username: '',
+          password: '',
+          confirmPassword: '',
+          firstName: '',
+          lastName: '',
+          birthday: '',
+          email: '',
+          unit: '',
+          street: '',
+          city: '',
+          province: '',
+          postalCode: ''
+        })
       } else {
         setError(true)
-        setMessage(customerData.message || "Registration failed")
+        setMessage(customerData.message || "Customer registration failed.")
       }
-
     } catch (err) {
-      console.error(err)
+      console.error("Error creating customer:", err)
       setError(true)
       setMessage("Something went wrong. Please try again.")
     }
   }
+
+  if (!checkedAuth) return <div>Loading...</div>
+  if (!authorized) return null
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">

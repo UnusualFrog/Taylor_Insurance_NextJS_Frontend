@@ -11,7 +11,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     const isEmployee = Cookies.get('role') === 'employee'
-    const isAdmin = Cookies.get('admin') === 'true' // Set this cookie on login if needed
+    const isAdmin = Cookies.get('isAdmin') === 'true' // Set this cookie on login if needed
 
     if (isAdmin && isEmployee) {
       setAuthorized(true)

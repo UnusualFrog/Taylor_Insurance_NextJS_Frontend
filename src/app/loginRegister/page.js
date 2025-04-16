@@ -50,7 +50,7 @@ export default function LoginRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (formType === "register") { // TODO: Handle registration functionality, focusing on login now.
+    if (formType === "register") { 
 
       if (formData.password !== formData.confirmPassword) {
         alert("Passwords do not match!"); // TODO: update to a nicer look maybe
@@ -58,17 +58,56 @@ export default function LoginRegister() {
       }
 
       // first create the address
-      // const addressResponse = await registerCustomer()
-      
+    const addressUrl = new URL("http://localhost:8080/v1/addresses");
+    addressUrl.searchParams.append("unit", formData.unit || 0);
+    addressUrl.searchParams.append("street", formData.street);
+    addressUrl.searchParams.append("city", formData.city);
+    addressUrl.searchParams.append("province", formData.province);
+    addressUrl.searchParams.append("postalCode", formData.postalCode);
 
+    try {
+      const addressResponse = await fetch(addressUrl.toString(), {
+        method: "POST",
+      });
 
-      const data = await registerCustomer(formData);
+      const addressData = await addressResponse.json();
 
-      if (data.success) {
-        console.log("register success");
-      } else {
-        alert(data.message || "Registration Failed");
+      if (!addressData.success) {
+        setAddressError(true);
+        alert("Failed to create address: " + addressData.message);
+        return;
       }
+
+      const addressId = addressData.object.id;
+
+      // Step 2: Register customer with the address ID
+      const registerUrl = new URL("http://localhost:8080/v1/customers/register");
+      registerUrl.searchParams.append("firstName", formData.firstName);
+      registerUrl.searchParams.append("lastName", formData.lastName);
+      registerUrl.searchParams.append("birthday", formData.birthday);
+      registerUrl.searchParams.append("email", formData.email);
+      registerUrl.searchParams.append("username", formData.username);
+      registerUrl.searchParams.append("password", formData.password);
+      registerUrl.searchParams.append("addressId", addressId);
+
+      const customerResponse = await fetch(registerUrl.toString(), {
+        method: "POST",
+      });
+
+      const customerData = await customerResponse.json();
+
+      if (customerData.success) {
+        alert("Registration successful!");
+        // Optionally redirect or auto-login here
+        router.push("/loginRegister");
+      } else {
+        alert("Registration failed: " + customerData.message);
+      }
+
+    } catch (err) {
+      console.error("Registration error:", err);
+      alert("Something went wrong. Please try again.");
+    }
 
     } 
     
