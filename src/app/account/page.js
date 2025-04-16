@@ -1,4 +1,5 @@
 'use client'
+
 import Cookies from 'js-cookie'
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -22,15 +23,95 @@ export default function Account() {
   const [selectedSection, setSelectedSection] = useState("info")
   const [dataType, setDataType] = useState("auto")
   const [viewMode, setViewMode] = useState("policies")
-  const [policies, setPolicies] = useState([])
-  const [quotes, setQuotes] = useState([])
+  const [policies, setPolicies] = useState({ auto: [], home: [] })
+  const [quotes, setQuotes] = useState({ auto: [], home: [] })
+  const [customerData, setCustomerData] = useState(null)
   const router = useRouter()
 
-  const fetchDummyData = () => {
-    setPolicies([{ id: 1, type: dataType, expiry: "2025-06-10" }])
-    setQuotes([{ id: 1, type: dataType, expiresAt: new Date(Date.now() + 86400000).toISOString() }])
-  }
+  // check for and handle user log in
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [username, setUsername] = useState('')
+  const [customerId, setCustomerId] = useState('')
+  const [checkedAuth, setCheckedAuth] = useState(false)
 
+  useEffect(() => {
+    const loggedin = Cookies.get('loggedin') === 'true'
+    const user = Cookies.get('username')
+    const id = Cookies.get('customerId')
+
+    if (loggedin && user && id) {
+      setIsLoggedIn(true)
+      setUsername(user)
+      setCustomerId(id)
+    }
+
+    setCheckedAuth(true)
+  }, []) // This will only run once on mount to check if the user is logged in
+
+  useEffect(() => {
+    if (isLoggedIn && customerId) {
+      // Fetch customer details
+      fetch(`http://localhost:8080/v1/customers/${customerId}`)
+        .then(response => response.json())
+        .then(data => {
+          setCustomerData(data)
+        })
+        .catch(error => console.error('Error fetching customer data:', error))
+  
+      // Fetch home policies
+      fetch(`http://localhost:8080/v1/home_policies/customers/${customerId}`)
+        .then(response => response.json())
+        .then(data => {
+          // Check if data.object exists and is an array before updating state
+          setPolicies(prevPolicies => ({
+            ...prevPolicies,
+            home: Array.isArray(data.object) ? data.object : [],
+          }))
+        })
+        .catch(error => console.error('Error fetching home policies:', error))
+  
+      // Fetch home quotes
+      fetch(`http://localhost:8080/v1/home_quotes/customers/${customerId}`)
+        .then(response => response.json())
+        .then(data => {
+          // Check if data.object exists and is an array before updating state
+          setQuotes(prevQuotes => ({
+            ...prevQuotes,
+            home: Array.isArray(data.object) ? data.object : [],
+          }))
+        })
+        .catch(error => console.error('Error fetching home quotes:', error))
+  
+      // Fetch auto policies
+      fetch(`http://localhost:8080/v1/auto_policies/customers/${customerId}`)
+        .then(response => response.json())
+        .then(data => {
+          // Check if data.object exists and is an array before appending to policies
+          setPolicies(prevPolicies => ({
+            ...prevPolicies,
+            auto: Array.isArray(data.object) ? data.object : [],
+          }))
+        })
+        .catch(error => console.error('Error fetching auto policies:', error))
+  
+      // Fetch auto quotes
+      fetch(`http://localhost:8080/v1/auto_quotes/customers/${customerId}`)
+        .then(response => response.json())
+        .then(data => {
+          // Check if data.object exists and is an array before appending to quotes
+          setQuotes(prevQuotes => ({
+            ...prevQuotes,
+            auto: Array.isArray(data.object) ? data.object : [],
+          }))
+        })
+        .catch(error => console.error('Error fetching auto quotes:', error))
+    }
+    
+  }, [isLoggedIn, customerId]) // Only run when `isLoggedIn` or `customerId` changes
+  
+  console.log("policies", policies);
+  console.log("quotes", quotes);
+  // Helper to render the remaining time for the quotes
   const renderTimer = (expiresAt) => {
     const diff = new Date(expiresAt) - new Date()
     const seconds = Math.floor(diff / 1000)
@@ -40,6 +121,7 @@ export default function Account() {
     return `${hrs}h ${mins}m`
   }
 
+  // Check if policy expires within 2 months
   const within2Months = (expiry) => {
     const expiryDate = new Date(expiry)
     const twoMonthsFromNow = new Date()
@@ -47,36 +129,6 @@ export default function Account() {
     return expiryDate <= twoMonthsFromNow
   }
 
-  useEffect(() => {
-    if (selectedSection === "auto" || selectedSection === "home") {
-      setDataType(selectedSection)
-      setViewMode("policies")
-      fetchDummyData()
-    }
-  }, [selectedSection])
-
-  // check for and handle user log in
-  const [isLoggedIn, setIsLoggedLogIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [customerId, setCustomerId] = useState('');
-  const [checkedAuth, setCheckedAuth] = useState(false);
-
-  useEffect(() => {
-    const loggedin = Cookies.get('loggedin') === 'true';
-    const user = Cookies.get('username');
-    const id = Cookies.get('csutomerId');
-
-    if(loggedin && user) {
-      setIsLoggedLogIn(true);
-      setUsername(user);
-      setCustomerId(id);
-    }
-
-    setCheckedAuth(true);
-  }, [])
-
-  // Wait until cookies are checked before rendering 
-  // TODO: remove this or make it pretty
   if (!checkedAuth) {
     return <div>Loading...</div>
   }
@@ -135,21 +187,15 @@ export default function Account() {
           </div>
 
           {/* Main Panel */}
-          {/* TODO: update all this based on the users logged in info, right now only username is updated. 
-          also remove this as a form/ don't let them edit it. */}
           <div className="w-full">
             {selectedSection === "info" && (
-              <form className="space-y-4">
-                <Input placeholder="Full Name" />
-                <Input placeholder={username} />
-                <Input type="date" />
-                <div className="space-y-2 border rounded p-4">
-                  <Input placeholder="Street" />
-                  <Input placeholder="City" />
-                  <Input placeholder="Province" />
-                  <Input placeholder="Postal Code" />
-                </div>
-              </form>
+              <div className="space-y-4">
+                {/* Customer info */}
+                <h2 className="text-xl font-semibold">Customer Info</h2>
+                <p><strong>Username:</strong> {username}</p>
+                <p><strong>Customer ID:</strong> {customerId}</p>
+                {/* Add more fields as needed */}
+              </div>
             )}
 
             {selectedSection === "password" && (
@@ -176,10 +222,10 @@ export default function Account() {
 
                 {viewMode === "policies" ? (
                   <>
-                    <h2 className="font-semibold mb-2">Policies</h2>
-                    {policies.length === 0 ? (
-                      <Button variant="link" onClick={() => router.push("/policy")}>
-                        Create Policy
+                    <h2 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Policies' : 'Auto Policies'}</h2>
+                    {policies[selectedSection].length === 0 ? (
+                      <Button variant="link" onClick={() => router.push(`/${selectedSection}-policy`)}>
+                        No Current Active Policies
                       </Button>
                     ) : (
                       <table className="w-full border text-sm mb-6">
@@ -187,23 +233,15 @@ export default function Account() {
                           <tr className="bg-gray-100">
                             <th className="border px-4 py-2">ID</th>
                             <th className="border px-4 py-2">Type</th>
-                            <th className="border px-4 py-2">Expiry</th>
-                            <th className="border px-4 py-2">Actions</th>
+                            <th className="border px-4 py-2">Expires In</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {policies.map((p) => (
-                            <tr key={p.id}>
-                              <td className="border px-4 py-2">{p.id}</td>
-                              <td className="border px-4 py-2">{p.type}</td>
-                              <td className="border px-4 py-2">{p.expiry}</td>
-                              <td className="border px-4 py-2">
-                                {within2Months(p.expiry) && (
-                                  <Button variant="link" className="text-green-600 p-0 h-auto">
-                                    Renew
-                                  </Button>
-                                )}
-                              </td>
+                          {policies[selectedSection].map((policy) => (
+                            <tr key={policy.id}>
+                              <td className="border px-4 py-2">{policy.id}</td>
+                              <td className="border px-4 py-2">{policy.type}</td>
+                              <td className="border px-4 py-2">{within2Months(policy.expiresAt) ? renderTimer(policy.expiresAt) : 'Expired'}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -212,7 +250,7 @@ export default function Account() {
                   </>
                 ) : (
                   <>
-                    <h2 className="font-semibold mb-2">Quotes</h2>
+                    <h2 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Quotes' : 'Auto Quotes'}</h2>
                     <table className="w-full border text-sm">
                       <thead>
                         <tr className="bg-gray-100">
@@ -222,13 +260,19 @@ export default function Account() {
                         </tr>
                       </thead>
                       <tbody>
-                        {quotes.map((q) => (
-                          <tr key={q.id}>
-                            <td className="border px-4 py-2">{q.id}</td>
-                            <td className="border px-4 py-2">{q.type}</td>
-                            <td className="border px-4 py-2">{renderTimer(q.expiresAt)}</td>
+                        {Array.isArray(quotes[selectedSection]) && quotes[selectedSection].length > 0 ? (
+                          quotes[selectedSection].map((q) => (
+                            <tr key={q.id}>
+                              <td className="border px-4 py-2">{q.id}</td>
+                              <td className="border px-4 py-2">{q.type}</td>
+                              <td className="border px-4 py-2">{renderTimer(q.expiresAt)}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="3" className="text-center">No quotes available</td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </>

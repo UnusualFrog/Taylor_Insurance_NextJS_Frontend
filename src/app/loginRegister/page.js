@@ -1,6 +1,6 @@
 'use client'
 import Cookies from 'js-cookie';
-import { loginCustomer } from "@/lib/auth"
+import { loginCustomer, registerCustomer } from "@/lib/auth"
 import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -23,11 +23,24 @@ import {
 
 export default function LoginRegister() {
   const router = useRouter()
+  const [addressError, setAddressError] = useState(false);
   const [formType, setFormType] = useState("login")
   const [formData, setFormData] = useState({
     username: '',
     password: '',
-    confirmPassword: ''
+    //following only used for registration
+    confirmPassword: '',
+    firstName: '',
+    lastName: '',
+    birthday: '',
+    email: '',
+    addressId:'',
+    // following is required for registration to make an address
+    unit: '',
+    street: '',
+    city: '',
+    province: '',
+    postalCode: ''
   })
 
   const handleChange = (e) => {
@@ -38,14 +51,18 @@ export default function LoginRegister() {
     e.preventDefault()
 
     if (formType === "register") { // TODO: Handle registration functionality, focusing on login now.
+
       if (formData.password !== formData.confirmPassword) {
         alert("Passwords do not match!"); // TODO: update to a nicer look maybe
         return
       }
 
-      const data = await registerCustomer({
-        // Fields for when register is put in here
-      })
+      // first create the address
+      // const addressResponse = await registerCustomer()
+      
+
+
+      const data = await registerCustomer(formData);
 
       if (data.success) {
         console.log("register success");
@@ -53,10 +70,12 @@ export default function LoginRegister() {
         alert(data.message || "Registration Failed");
       }
 
-    } else {
+    } 
+    
+    else {
       const data = await loginCustomer(formData.username, formData.password);
 
-      if (data.message && data.customerId) {
+      if (data.message && data.customerId) { //TODO: This probably changes when backend is set to always send 'success' and 'message'
         console.log("successful login");
         console.log(data);
         // Lets bake some cookies, lol.
@@ -103,7 +122,6 @@ export default function LoginRegister() {
               </SelectContent>
             </Select>
           </div>
-          {/* TODO: register and log in need to be two separate forms, they have different required info and function */}
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-full">
               <label className="block text-sm font-medium text-gray-700 mb-1">User Name</label>
@@ -111,7 +129,7 @@ export default function LoginRegister() {
                 type="username"
                 name="username"
                 placeholder="User Name"
-                value={formData.email}
+                value={formData.username}
                 onChange={handleChange}
                 required
               />
@@ -130,8 +148,9 @@ export default function LoginRegister() {
             </div>
 
             {formType === "register" && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
                 <Input
                   type="password"
                   name="confirmPassword"
@@ -140,8 +159,61 @@ export default function LoginRegister() {
                   onChange={handleChange}
                   required
                 />
-              </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                  <Input name="firstName" value={formData.firstName} onChange={handleChange} required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                  <Input name="lastName" value={formData.lastName} onChange={handleChange} required />
+                </div>
+                <div className="col-span-full">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Birthday</label>
+                  <Input type="date" name="birthday" value={formData.birthday} onChange={handleChange} required />
+                </div>
+                <div className="col-span-full">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                </div>
+
+                <div className="col-span-full font-semibold mt-6 mb-2">Address Info</div>
+
+                <div
+                  className={`col-span-full border rounded-xl p-4 space-y-4 ${
+                    addressError ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                >
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                    <Input type="number" name="unit" value={formData.unit} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Street</label>
+                    <Input name="street" value={formData.street} onChange={handleChange} required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                    <Input name="city" value={formData.city} onChange={handleChange} required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Province</label>
+                    <Input name="province" value={formData.province} onChange={handleChange} required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                    <Input name="postalCode" value={formData.postalCode} onChange={handleChange} required />
+                  </div>
+                </div>
+                {addressError && (
+                  <p className="text-red-600 text-sm mt-1">
+                      Please review your address details. Something seems off. If this error persists contact support for help.
+                  </p>
+                )}
+
+              </>
             )}
+
 
             <div className="col-span-full">
               <Button type="submit" className="w-full h-[50px] text-lg font-semibold">
