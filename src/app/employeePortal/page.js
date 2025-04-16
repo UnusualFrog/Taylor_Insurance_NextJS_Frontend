@@ -1,36 +1,49 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
 
-export default function EmployeeDashboard() {
+export default function EmployeePortalDashboard() {
+  const router = useRouter()
   const [username, setUsername] = useState('')
 
   useEffect(() => {
     const storedUsername = Cookies.get('username')
-    if (storedUsername) {
-      setUsername(storedUsername)
-    }
+    if (storedUsername) setUsername(storedUsername)
   }, [])
 
   return (
-    <main className="max-w-xl mx-auto mt-10 px-6">
-      <h1 className="text-4xl font-bold mb-4 text-blue-800">
-        Welcome, {username || 'Employee'}!
-      </h1>
-      <p className="text-gray-700">
-        This is your employee portal dashboard. You can manage inventory,
-        check internal updates, and view reports here.
-      </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">
+      <Card className="w-full max-w-3xl bg-white/90 shadow-xl rounded-xl">
+        <CardHeader className="flex flex-col items-center pt-6">
+          <Avatar className="h-20 w-20 mb-4">
+            <AvatarImage src="/TInsurance-landing-logo.png" />
+            <AvatarFallback>EMP</AvatarFallback>
+          </Avatar>
+          <CardTitle className="text-2xl text-gray-800">
+            Welcome, {username || 'Employee'}!
+          </CardTitle>
+        </CardHeader>
 
-      <div className="mt-6 p-4 bg-blue-100 rounded-xl shadow">
-        <h2 className="text-xl font-semibold">Quick Actions</h2>
-        <ul className="list-disc pl-5 mt-2 text-blue-900">
-          <li>View today's reports</li>
-          <li>Check internal messages</li>
-          <li>Manage your profile</li>
-        </ul>
-      </div>
-    </main>
+        <CardContent className="px-6 pb-8 space-y-6">
+          <p className="text-gray-700 text-center">
+            Use the buttons below to manage customer accounts, view policies, or create new customers.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button className="w-full sm:w-auto" onClick={() => router.push('/employeeViewCustomers')}>
+              View Customer Quotes & Policies
+            </Button>
+            <Button className="w-full sm:w-auto" onClick={() => router.push('/employeeCreateCustomers')}>
+              Create New Customer
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

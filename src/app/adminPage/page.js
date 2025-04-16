@@ -10,9 +10,10 @@ export default function AdminPage() {
   const router = useRouter()
 
   useEffect(() => {
+    const isEmployee = Cookies.get('role') === 'employee'
     const isAdmin = Cookies.get('admin') === 'true' // Set this cookie on login if needed
 
-    if (isAdmin) {
+    if (isAdmin && isEmployee) {
       setAuthorized(true)
     } else {
       router.push('/unauthorized')
