@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from "react"
+import Cookies from 'js-cookie'
+import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
@@ -9,9 +10,126 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 export default function GetQuote() {
   const [insuranceType, setInsuranceType] = useState("home")
   const [formData, setFormData] = useState({})
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [checkedAuth, setCheckedAuth] = useState(false)
+  const [customerId, setCustomerId] = useState("")
+  const [homes, setHomes] = useState([]);
+  const [autos, setAutos] = useState([]);
+
+
+  useEffect(() => {
+    const loggedin = Cookies.get('loggedin') === 'true'
+    const customer = Cookies.get('customerId');
+    setIsLoggedIn(loggedin)
+    setCustomerId(customer)
+    setCheckedAuth(true)
+  }, [])
+
+  // Fetch homes and autos
+useEffect(() => {
+  if (isLoggedIn && customerId) {
+    fetch(`http://localhost:8080/v1/homes/${customerId}`)
+      .then(res => res.json())
+      .then(data => {
+        setHomes(Array.isArray(data.object) ? data.object : [])
+      })
+      .catch(err => console.error("Failed to fetch homes", err))
+
+    fetch(`http://localhost:8080/v1/autos/${customerId}`)
+      .then(res => res.json())
+      .then(data => {
+        setAutos(Array.isArray(data.object) ? data.object : [])
+      })
+      .catch(err => console.error("Failed to fetch autos", err))
+  }
+}, [isLoggedIn, customerId])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (!isLoggedIn || !customerId) {
+      alert("You must be logged in to get a quote.");
+      return;
+    }
+  
+    if (insuranceType === "home") {
+      const { homeId, liability } = formData;
+      const packagedQuote = false;
+  
+      if (!homeId || !liability) {
+        alert("Please fill in all fields.");
+        return;
+      }
+  
+      try {
+        const response = await fetch(
+          `http://localhost:8080/v1/home_quotes/${customerId}/${homeId}?liability=${liability}&packagedQuote=${packagedQuote}`,
+          { method: "POST" }
+        );
+        const data = await response.json();
+  
+        if (data.success) {
+          alert("Home quote successfully created!");
+        } else {
+          alert(data.message || "Failed to create quote.");
+        }
+      } catch (err) {
+        console.error("Error creating home quote:", err);
+        alert("An error occurred while creating the quote.");
+      }
+    }
+  
+    // 🔥 NEW: Handle Auto Quote
+    if (insuranceType === "auto") {
+      const { autoId } = formData;
+      const packagedQuote = false;
+  
+      if (!autoId) {
+        alert("Please select a vehicle.");
+        return;
+      }
+  
+      try {
+        const response = await fetch(
+          `http://localhost:8080/v1/auto_quotes/${customerId}/${autoId}?packagedQuote=${packagedQuote}`,
+          { method: "POST" }
+        );
+        const data = await response.json();
+  
+        if (data.success) {
+          alert("Auto quote successfully created!");
+        } else {
+          alert(data.message || "Failed to create auto quote.");
+        }
+      } catch (err) {
+        console.error("Error creating auto quote:", err);
+        alert("An error occurred while creating the quote.");
+      }
+    }
+  };
+  
+  
+  
+
+  if (!checkedAuth) return <div>Loading...</div>
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center px-4">
+        <Card className="bg-white/90 max-w-md shadow-lg p-6">
+          <CardTitle className="text-xl text-gray-800">Login Required</CardTitle>
+          <p className="mt-4 text-gray-600">
+            You must be logged in to get a quote. Please{" "}
+            <a href="/login" className="text-blue-600 underline">log in</a> or{" "}
+            <a href="/register" className="text-blue-600 underline">register</a>.
+          </p>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -35,45 +153,65 @@ export default function GetQuote() {
             </Select>
           </div>
 
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            onSubmit={handleSubmit}
+          >
             {insuranceType === "home" ? (
               <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Home Value</label>
-                  <Input type="number" name="homeValue" onChange={handleChange} placeholder="e.g. 250000" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Dwelling Type</label>
-                  <Input type="text" name="dwellingType" onChange={handleChange} placeholder="e.g. Bungalow" />
-                </div>
-                <div className="col-span-full">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Heating Type</label>
-                  <Select name="heatingType" onValueChange={(val) => handleChange({ target: { name: "heatingType", value: val } })}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select heating type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="OIL">OIL</SelectItem>
-                      <SelectItem value="ELECTRIC">ELECTRIC</SelectItem>
-                      <SelectItem value="WOOD">WOOD</SelectItem>
-                      <SelectItem value="OTHER">OTHER</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Select Home</label>
+                <Select
+                  onValueChange={(val) => handleChange({ target: { name: "homeId", value: val } })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Choose your home" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {homes.map((home) => (
+                      <SelectItem key={home.id} value={home.id.toString()}>
+                        {home.address.unit}-{home.address.street}, {home.address.city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Liability Limit</label>
+                <Select
+                  onValueChange={(val) => handleChange({ target: { name: "liability", value: val } })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select liability limit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1000000">$1,000,000</SelectItem>
+                    <SelectItem value="2000000">$2,000,000</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+          
+            </>
+            
             ) : (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Make</label>
-                  <Input type="text" name="make" onChange={handleChange} placeholder="e.g. Toyota" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                  <Input type="text" name="model" onChange={handleChange} placeholder="e.g. Corolla" />
-                </div>
-                <div className="col-span-full">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                  <Input type="number" name="year" onChange={handleChange} placeholder="e.g. 2022" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Vehicle</label>
+                  <Select
+                    onValueChange={(val) => handleChange({ target: { name: "autoId", value: val } })}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choose your vehicle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {autos.map((auto) => (
+                        <SelectItem key={auto.id} value={auto.id.toString()}>
+                          {auto.year} {auto.make} {auto.model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </>
             )}
