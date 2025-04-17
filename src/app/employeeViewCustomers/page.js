@@ -14,62 +14,62 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button'
 
 export default function ViewCustomers() {
-    const [authorized, setAuthorized] = useState(false)
-    const [checkedAuth, setCheckedAuth] = useState(false)
-    const router = useRouter()
-    const [username, setUsername] = useState('')
-    const [customers, setCustomers] = useState([])
-    const [selectedCustomerId, setSelectedCustomerId] = useState(null)
-    const [selectedSection, setSelectedSection] = useState('home')
-    const [viewMode, setViewMode] = useState('policies')
-    const [policies, setPolicies] = useState({ home: [], auto: [] })
-    const [quotes, setQuotes] = useState({ home: [], auto: [] })
-    const [createMode, setCreateMode] = useState(false)
-    const [quoteFormData, setQuoteFormData] = useState({ liability: '', packagedQuote: false, make: '', model: '', year: '' })
-    const [homes, setHomes] = useState([])
-    const [autos, setAutos] = useState([])
-    const [editingHome, setEditingHome] = useState(null);
-    const [editingAuto, setEditingAuto] = useState(null);
-
-    
+  const [authorized, setAuthorized] = useState(false)
+  const [checkedAuth, setCheckedAuth] = useState(false)
+  const router = useRouter()
+  const [username, setUsername] = useState('')
+  const [customers, setCustomers] = useState([])
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null)
+  const [selectedSection, setSelectedSection] = useState('home')
+  const [viewMode, setViewMode] = useState('policies')
+  const [policies, setPolicies] = useState({ home: [], auto: [] })
+  const [quotes, setQuotes] = useState({ home: [], auto: [] })
+  const [createMode, setCreateMode] = useState(false)
+  const [quoteFormData, setQuoteFormData] = useState({ liability: '', packagedQuote: false, make: '', model: '', year: '' })
+  const [homes, setHomes] = useState([])
+  const [autos, setAutos] = useState([])
+  const [editingHome, setEditingHome] = useState(null);
+  const [editingAuto, setEditingAuto] = useState(null);
 
 
-useEffect(() => {
-  if (!selectedCustomerId || !authorized || !checkedAuth) return;
-
-  // Fetch homes
-  fetch(`http://localhost:8080/v1/homes/${selectedCustomerId}`)
-    .then(res => res.json())
-    .then(data => setHomes(Array.isArray(data.object) ? data.object : []))
-    .catch(err => console.error("Failed to fetch homes:", err));
-
-  // Fetch autos
-  fetch(`http://localhost:8080/v1/autos/${selectedCustomerId}`)
-    .then(res => res.json())
-    .then(data => setAutos(Array.isArray(data.object) ? data.object : []))
-    .catch(err => console.error("Failed to fetch autos:", err));
-}, [selectedCustomerId]);
 
 
-  
-    useEffect(() => {
-      const loggedIn = Cookies.get('loggedin') === 'true'
-      const role = Cookies.get('role')
-  
-      if (loggedIn && role === 'employee') {
-        setAuthorized(true)
-      } else if (!loggedIn) {
-        router.push('/employeeLogIn')
-      } else {
-        router.push('/unauthorized')
-      }
-  
-      setCheckedAuth(true)
-    }, [])
-  
+  useEffect(() => {
+    if (!selectedCustomerId || !authorized || !checkedAuth) return;
 
-    
-  
+    // Fetch homes
+    fetch(`http://localhost:8080/v1/homes/${selectedCustomerId}`)
+      .then(res => res.json())
+      .then(data => setHomes(Array.isArray(data.object) ? data.object : []))
+      .catch(err => console.error("Failed to fetch homes:", err));
+
+    // Fetch autos
+    fetch(`http://localhost:8080/v1/autos/${selectedCustomerId}`)
+      .then(res => res.json())
+      .then(data => setAutos(Array.isArray(data.object) ? data.object : []))
+      .catch(err => console.error("Failed to fetch autos:", err));
+  }, [selectedCustomerId]);
+
+
+
+  useEffect(() => {
+    const loggedIn = Cookies.get('loggedin') === 'true'
+    const role = Cookies.get('role')
+
+    if (loggedIn && role === 'employee') {
+      setAuthorized(true)
+    } else if (!loggedIn) {
+      router.push('/employeeLogIn')
+    } else {
+      router.push('/unauthorized')
+    }
+
+    setCheckedAuth(true)
+  }, [])
+
+
+
+
 
   useEffect(() => {
     const storedUsername = Cookies.get('username')
@@ -119,8 +119,8 @@ useEffect(() => {
       })))
   }, [selectedCustomerId])
 
-    if (!checkedAuth) return <div>Loading...</div>
-    if (!authorized) return null
+  if (!checkedAuth) return <div>Loading...</div>
+  if (!authorized) return null
 
   return (
     <div className="min-h-screen flex items-start justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-10">
@@ -163,7 +163,7 @@ useEffect(() => {
                   View Quotes
                 </Button>
                 <Button onClick={() => setViewMode('create')} className={viewMode === 'create' ? 'border-2 border-blue-600' : ''}>
-                    Create Quote
+                  Create Quote
                 </Button>
 
 
@@ -179,254 +179,274 @@ useEffect(() => {
               </div>
 
               {viewMode === 'policies' ? (
-                  <>
-                    <h3 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Policies' : 'Auto Policies'}</h3>
-{policies[selectedSection].length === 0 ? (
-  <p>No policies found.</p>
-) : (
-  <table className="w-full border text-sm mb-6">
-    <thead>
-      <tr className="bg-gray-100">
-        <th className="border px-4 py-2">ID</th>
-        <th className="border px-4 py-2">Premium</th>
-        {selectedSection === 'auto' ? (
-          <>
-            <th className="border px-4 py-2">Make</th>
-            <th className="border px-4 py-2">Model</th>
-            <th className="border px-4 py-2">Year</th>
-          </>
-        ) : (
-          <th className="border px-4 py-2">Address</th>
-        )}
-        <th className="border px-4 py-2">Effective</th>
-        <th className="border px-4 py-2">Expires</th>
-      </tr>
-    </thead>
-    <tbody>
-      {policies[selectedSection].map(p => {
-        const premium = p.premium?.toFixed(2)
-        const auto = p.auto
-        const home = p.home
-        const address = home?.address
-          ? `${home.address.unit ? home.address.unit + '-' : ''}${home.address.street}, ${home.address.city}, ${home.address.province} ${home.address.postalCode}`
-          : ''
+                <>
+                  <h3 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Policies' : 'Auto Policies'}</h3>
+                  {policies[selectedSection].length === 0 ? (
+                    <p>No policies found.</p>
+                  ) : (
+                    <table className="w-full border text-sm mb-6">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border px-4 py-2">ID</th>
+                          <th className="border px-4 py-2">Premium</th>
+                          {selectedSection === 'auto' ? (
+                            <>
+                              <th className="border px-4 py-2">Make</th>
+                              <th className="border px-4 py-2">Model</th>
+                              <th className="border px-4 py-2">Year</th>
+                            </>
+                          ) : (
+                            <th className="border px-4 py-2">Address</th>
+                          )}
+                          <th className="border px-4 py-2">Effective</th>
+                          <th className="border px-4 py-2">Expires</th>
+                          <th className="border px-4 py-2">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {policies[selectedSection].map(p => {
+                          const premium = p.premium?.toFixed(2)
+                          const auto = p.auto
+                          const home = p.home
+                          const address = home?.address
+                            ? `${home.address.unit ? home.address.unit + '-' : ''}${home.address.street}, ${home.address.city}, ${home.address.province} ${home.address.postalCode}`
+                            : ''
 
-        return (
-          <tr key={p.id}>
-            <td className="border px-4 py-2">{p.id}</td>
-            <td className="border px-4 py-2">${premium}</td>
-            {selectedSection === 'auto' ? (
-              <>
-                <td className="border px-4 py-2">{auto?.make}</td>
-                <td className="border px-4 py-2">{auto?.model}</td>
-                <td className="border px-4 py-2">{auto?.year}</td>
-              </>
-            ) : (
-              <td className="border px-4 py-2">{address}</td>
-            )}
-            <td className="border px-4 py-2">{p.effectiveDate}</td>
-            <td className="border px-4 py-2">{p.endDate}</td>
-          </tr>
-        )
-      })}
-    </tbody>
-  </table>
-)}
+                          return (
+                            <tr key={p.id}>
+                              <td className="border px-4 py-2">{p.id}</td>
+                              <td className="border px-4 py-2">${premium}</td>
+                              {selectedSection === 'auto' ? (
+                                <>
+                                  <td className="border px-4 py-2">{auto?.make}</td>
+                                  <td className="border px-4 py-2">{auto?.model}</td>
+                                  <td className="border px-4 py-2">{auto?.year}</td>
+                                </>
+                              ) : (
+                                <td className="border px-4 py-2">{address}</td>
+                              )}
+                              <td className="border px-4 py-2">{p.effectiveDate}</td>
+                              <td className="border px-4 py-2">{p.endDate}</td>
+                              <td className="border px-4 py-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => router.push(`/policy/${p.id}?type=${selectedSection}&referrer=employeeView`)}
+                                >
+                                  View
+                                </Button>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  )}
 
-                  </>
-                ) : viewMode === 'quotes' ? (
-                  <>
-                    <h3 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Quotes' : 'Auto Quotes'}</h3>
-{quotes[selectedSection].length === 0 ? (
-  <p>No quotes found.</p>
-) : (
-  <table className="w-full border text-sm mb-6">
-    <thead>
-      <tr className="bg-gray-100">
-        <th className="border px-4 py-2">ID</th>
-        <th className="border px-4 py-2">Premium</th>
-        {selectedSection === 'auto' ? (
-          <>
-            <th className="border px-4 py-2">Make</th>
-            <th className="border px-4 py-2">Model</th>
-            <th className="border px-4 py-2">Year</th>
-          </>
-        ) : (
-          <th className="border px-4 py-2">Address</th>
-        )}
-        <th className="border px-4 py-2">Generated</th>
-        <th className="border px-4 py-2">Expires In</th>
-      </tr>
-    </thead>
-    <tbody>
-      {quotes[selectedSection].map(q => {
-        const premium = q.premium?.toFixed(2)
-        const auto = q.auto
-        const home = q.home
-        const address = home?.address
-          ? `${home.address.unit ? home.address.unit + '-' : ''}${home.address.street}, ${home.address.city}, ${home.address.province} ${home.address.postalCode}`
-          : ''
+                </>
+              ) : viewMode === 'quotes' ? (
+                <>
+                  <h3 className="font-semibold mb-2">{selectedSection === 'home' ? 'Home Quotes' : 'Auto Quotes'}</h3>
+                  {quotes[selectedSection].length === 0 ? (
+                    <p>No quotes found.</p>
+                  ) : (
+                    <table className="w-full border text-sm mb-6">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border px-4 py-2">ID</th>
+                          <th className="border px-4 py-2">Premium</th>
+                          {selectedSection === 'auto' ? (
+                            <>
+                              <th className="border px-4 py-2">Make</th>
+                              <th className="border px-4 py-2">Model</th>
+                              <th className="border px-4 py-2">Year</th>
+                            </>
+                          ) : (
+                            <th className="border px-4 py-2">Address</th>
+                          )}
+                          <th className="border px-4 py-2">Generated</th>
+                          <th className="border px-4 py-2">Expires In</th>
+                          <th className="border px-4 py-2">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {quotes[selectedSection].map(q => {
+                          const premium = q.premium?.toFixed(2)
+                          const auto = q.auto
+                          const home = q.home
+                          const address = home?.address
+                            ? `${home.address.unit ? home.address.unit + '-' : ''}${home.address.street}, ${home.address.city}, ${home.address.province} ${home.address.postalCode}`
+                            : ''
 
-        const expiryDate = new Date(q.generationDate)
-        expiryDate.setFullYear(expiryDate.getFullYear() + 1)
+                          const expiryDate = new Date(q.generationDate)
+                          expiryDate.setFullYear(expiryDate.getFullYear() + 1)
 
-        const timeRemaining = (() => {
-          const diff = expiryDate - new Date()
-          if (diff <= 0) return "Expired"
-          const mins = Math.floor(diff / (1000 * 60)) % 60
-          const hrs = Math.floor(diff / (1000 * 60 * 60)) % 24
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-          return `${days}d ${hrs}h ${mins}m`
-        })()
+                          const timeRemaining = (() => {
+                            const diff = expiryDate - new Date()
+                            if (diff <= 0) return "Expired"
+                            const mins = Math.floor(diff / (1000 * 60)) % 60
+                            const hrs = Math.floor(diff / (1000 * 60 * 60)) % 24
+                            const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+                            return `${days}d ${hrs}h ${mins}m`
+                          })()
 
-        return (
-          <tr key={q.id}>
-            <td className="border px-4 py-2">{q.id}</td>
-            <td className="border px-4 py-2">${premium}</td>
-            {selectedSection === 'auto' ? (
-              <>
-                <td className="border px-4 py-2">{auto?.make}</td>
-                <td className="border px-4 py-2">{auto?.model}</td>
-                <td className="border px-4 py-2">{auto?.year}</td>
-              </>
-            ) : (
-              <td className="border px-4 py-2">{address}</td>
-            )}
-            <td className="border px-4 py-2">{q.generationDate}</td>
-            <td className="border px-4 py-2">{timeRemaining}</td>
-          </tr>
-        )
-      })}
-    </tbody>
-  </table>
-)}
+                          return (
+                            <tr key={q.id}>
+                              <td className="border px-4 py-2">{q.id}</td>
+                              <td className="border px-4 py-2">${premium}</td>
+                              {selectedSection === 'auto' ? (
+                                <>
+                                  <td className="border px-4 py-2">{auto?.make}</td>
+                                  <td className="border px-4 py-2">{auto?.model}</td>
+                                  <td className="border px-4 py-2">{auto?.year}</td>
+                                </>
+                              ) : (
+                                <td className="border px-4 py-2">{address}</td>
+                              )}
+                              <td className="border px-4 py-2">{q.generationDate}</td>
+                              <td className="border px-4 py-2">{timeRemaining}</td>
+                              <td className="border px-4 py-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => router.push(`/quote/${q.id}?type=${selectedSection}&referrer=employeeView`)}
+                                >
+                                  View
+                                </Button>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  )}
 
-                  </>
-                ) : (
-                  // This is the create mode section
-                  <div className="mt-6">
-                    <h3 className="font-semibold mb-2">Create {selectedSection === 'home' ? 'Home' : 'Auto'} Quote</h3>
-                    <form
-  className="grid grid-cols-1 md:grid-cols-2 gap-6"
-  onSubmit={async (e) => {
-    e.preventDefault();
-    if (!selectedCustomerId) return;
+                </>
+              ) : (
+                // This is the create mode section
+                <div className="mt-6">
+                  <h3 className="font-semibold mb-2">Create {selectedSection === 'home' ? 'Home' : 'Auto'} Quote</h3>
+                  <form
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (!selectedCustomerId) return;
 
-    if (selectedSection === 'home') {
-      const { homeId, liability } = quoteFormData;
-      const packagedQuote = false;
+                      if (selectedSection === 'home') {
+                        const { homeId, liability } = quoteFormData;
+                        const packagedQuote = false;
 
-      if (!homeId || !liability) {
-        alert("Please fill in all fields.");
-        return;
-      }
+                        if (!homeId || !liability) {
+                          alert("Please fill in all fields.");
+                          return;
+                        }
 
-      try {
-        const res = await fetch(
-          `http://localhost:8080/v1/home_quotes/${selectedCustomerId}/${homeId}?liability=${liability}&packagedQuote=${packagedQuote}`,
-          { method: "POST" }
-        );
-        const data = await res.json();
-        if (data.success) {
-          alert("Home quote created!");
-          window.location.reload();
+                        try {
+                          const res = await fetch(
+                            `http://localhost:8080/v1/home_quotes/${selectedCustomerId}/${homeId}?liability=${liability}&packagedQuote=${packagedQuote}`,
+                            { method: "POST" }
+                          );
+                          const data = await res.json();
+                          if (data.success) {
+                            alert("Home quote created!");
+                            window.location.reload();
 
-        } else {
-          alert(data.message || "Failed to create quote.");
-        }
-      } catch (err) {
-        console.error("Home quote error:", err);
-        alert("Something went wrong.");
-      }
-    }
+                          } else {
+                            alert(data.message || "Failed to create quote.");
+                          }
+                        } catch (err) {
+                          console.error("Home quote error:", err);
+                          alert("Something went wrong.");
+                        }
+                      }
 
-    if (selectedSection === 'auto') {
-      const { autoId } = quoteFormData;
-      const packagedQuote = false;
+                      if (selectedSection === 'auto') {
+                        const { autoId } = quoteFormData;
+                        const packagedQuote = false;
 
-      if (!autoId) {
-        alert("Please select a vehicle.");
-        return;
-      }
+                        if (!autoId) {
+                          alert("Please select a vehicle.");
+                          return;
+                        }
 
-      try {
-        const res = await fetch(
-          `http://localhost:8080/v1/auto_quotes/${selectedCustomerId}/${autoId}?packagedQuote=${packagedQuote}`,
-          { method: "POST" }
-        );
-        const data = await res.json();
-        if (data.success) {
-          alert("Auto quote created!");
-          window.location.reload();
-        } else {
-          alert(data.message || "Failed to create quote.");
-        }
-      } catch (err) {
-        console.error("Auto quote error:", err);
-        alert("Something went wrong.");
-      }
-    }
-  }}
->
-  {selectedSection === "home" ? (
-    <>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Select Home</label>
-        <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, homeId: val }))}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Choose a home" />
-          </SelectTrigger>
-          <SelectContent>
-            {homes.map((home) => (
-              <SelectItem key={home.id} value={home.id.toString()}>
-                {home.address.unit}-{home.address.street}, {home.address.city}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Liability</label>
-        <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, liability: val }))}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select liability" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1000000">$1,000,000</SelectItem>
-            <SelectItem value="2000000">$2,000,000</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </>
-  ) : (
-    <>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Select Vehicle</label>
-        <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, autoId: val }))}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Choose a vehicle" />
-          </SelectTrigger>
-          <SelectContent>
-            {autos.map((auto) => (
-              <SelectItem key={auto.id} value={auto.id.toString()}>
-                {auto.year} {auto.make} {auto.model}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    </>
-  )}
+                        try {
+                          const res = await fetch(
+                            `http://localhost:8080/v1/auto_quotes/${selectedCustomerId}/${autoId}?packagedQuote=${packagedQuote}`,
+                            { method: "POST" }
+                          );
+                          const data = await res.json();
+                          if (data.success) {
+                            alert("Auto quote created!");
+                            window.location.reload();
+                          } else {
+                            alert(data.message || "Failed to create quote.");
+                          }
+                        } catch (err) {
+                          console.error("Auto quote error:", err);
+                          alert("Something went wrong.");
+                        }
+                      }
+                    }}
+                  >
+                    {selectedSection === "home" ? (
+                      <>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Select Home</label>
+                          <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, homeId: val }))}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Choose a home" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {homes.map((home) => (
+                                <SelectItem key={home.id} value={home.id.toString()}>
+                                  {home.address.unit}-{home.address.street}, {home.address.city}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Liability</label>
+                          <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, liability: val }))}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select liability" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="1000000">$1,000,000</SelectItem>
+                              <SelectItem value="2000000">$2,000,000</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Select Vehicle</label>
+                          <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, autoId: val }))}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Choose a vehicle" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {autos.map((auto) => (
+                                <SelectItem key={auto.id} value={auto.id.toString()}>
+                                  {auto.year} {auto.make} {auto.model}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </>
+                    )}
 
-  <div className="col-span-full">
-    <Button type="submit" className="w-full h-[50px] text-lg font-semibold mt-4">
-      Create Quote
-    </Button>
-  </div>
-</form>
+                    <div className="col-span-full">
+                      <Button type="submit" className="w-full h-[50px] text-lg font-semibold mt-4">
+                        Create Quote
+                      </Button>
+                    </div>
+                  </form>
 
-                  </div>
-                )}
+                </div>
+              )}
 
             </div>
           )}

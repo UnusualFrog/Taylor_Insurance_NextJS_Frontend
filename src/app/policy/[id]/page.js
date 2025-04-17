@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Cookies from "js-cookie"
 
-export default function PolicyDetails({ params }) {
+export default function Policy({ params }) {
   const { id } = use(params)
   const searchParams = useSearchParams()
   const type = searchParams.get("type") // expects 'auto' or 'home'
+  const referrer = searchParams.get("referrer") // new param to track where we came from
   const [quoteData, setQuoteData] = useState(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -49,7 +50,12 @@ export default function PolicyDetails({ params }) {
 
     if (data.success) {
       alert("Policy successfully renewed!")
-      router.push("/account")
+      // Redirect based on referrer
+      if (referrer === 'employeeView') {
+        router.push("/employeeViewCustomers")
+      } else {
+        router.push("/account")
+      }
     } else {
       alert(data.message || "Renew failed. If error persists please contact support")
     }
@@ -67,7 +73,12 @@ export default function PolicyDetails({ params }) {
         
         if (data.success) {
           alert("Policy successfully cancelled.")
-          router.push("/account")
+          // Redirect based on referrer
+          if (referrer === 'employeeView') {
+            router.push("/employeeViewCustomers")
+          } else {
+            router.push("/account")
+          }
         } else {
           alert(data.message || "Cancellation failed. If error persists please contact support.")
         }
@@ -107,7 +118,17 @@ export default function PolicyDetails({ params }) {
             <Button onClick={handleCancel} variant="destructive">
               Cancel Policy
             </Button>
-            <Button onClick={() => router.push(`/account`)} variant="outline">
+            <Button 
+              onClick={() => {
+                // Return based on referrer
+                if (referrer === 'employeeView') {
+                  router.push("/employeeViewCustomers")
+                } else {
+                  router.push("/account")
+                }
+              }} 
+              variant="outline"
+            >
               Return
             </Button>
           </div>
