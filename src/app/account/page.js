@@ -171,7 +171,7 @@ export default function Account() {
         <div>
           <h1 className="text-2xl font-bold">You're not logged in.</h1>
           <p className="mt-2 text-gray-600">
-            Please <a href="/login" className="text-blue-500 underline">log in</a> or <a href="/register" className="text-blue-500 underline">register</a>.
+            Please <a href="/loginRegister" className="text-blue-500 underline">log in</a> or <a href="/loginRegister" className="text-blue-500 underline">register</a>.
           </p>
         </div>
       </div>
