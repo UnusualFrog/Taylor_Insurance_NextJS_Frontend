@@ -53,7 +53,29 @@ export default function PolicyDetails({ params }) {
     } else {
       alert(data.message || "Renew failed. If error persists please contact support")
     }
+  }
   
+  const handleCancel = async () => {
+    if (confirm("Are you sure you want to cancel this policy?")) {
+      try {
+        // Keep the original end date, only change activeStatus to false
+        const res = await fetch(`http://localhost:8080/v1/${type}_policies/${quoteData.id}?activeStatus=false&endDate=${quoteData.endDate}`, {
+          method: 'PUT'
+        })
+        
+        const data = await res.json()
+        
+        if (data.success) {
+          alert("Policy successfully cancelled.")
+          router.push("/account")
+        } else {
+          alert(data.message || "Cancellation failed. If error persists please contact support.")
+        }
+      } catch (error) {
+        console.error("Error cancelling policy:", error)
+        alert("Failed to cancel policy. Please try again.")
+      }
+    }
   }
 
   if (loading) return <div className="p-10">Loading...</div>
@@ -78,12 +100,17 @@ export default function PolicyDetails({ params }) {
             <p><strong>Property:</strong> {quoteData.home.address?.street}, {quoteData.home.address?.city}</p>
           )}
 
-          <Button onClick={handleRenew} className="mt-4">
-            Renew Policy
-          </Button>
-          <Button onClick={() => router.push(`/account`)} className="mt-4">
-            Return
-          </Button>
+          <div className="flex flex-wrap gap-4 mt-4">
+            <Button onClick={handleRenew}>
+              Renew Policy
+            </Button>
+            <Button onClick={handleCancel} variant="destructive">
+              Cancel Policy
+            </Button>
+            <Button onClick={() => router.push(`/account`)} variant="outline">
+              Return
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
