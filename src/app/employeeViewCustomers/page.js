@@ -26,6 +26,30 @@ export default function ViewCustomers() {
     const [quotes, setQuotes] = useState({ home: [], auto: [] })
     const [createMode, setCreateMode] = useState(false)
     const [quoteFormData, setQuoteFormData] = useState({ liability: '', packagedQuote: false, make: '', model: '', year: '' })
+    const [homes, setHomes] = useState([])
+    const [autos, setAutos] = useState([])
+    const [editingHome, setEditingHome] = useState(null);
+    const [editingAuto, setEditingAuto] = useState(null);
+
+    
+
+
+useEffect(() => {
+  if (!selectedCustomerId || !authorized || !checkedAuth) return;
+
+  // Fetch homes
+  fetch(`http://localhost:8080/v1/homes/${selectedCustomerId}`)
+    .then(res => res.json())
+    .then(data => setHomes(Array.isArray(data.object) ? data.object : []))
+    .catch(err => console.error("Failed to fetch homes:", err));
+
+  // Fetch autos
+  fetch(`http://localhost:8080/v1/autos/${selectedCustomerId}`)
+    .then(res => res.json())
+    .then(data => setAutos(Array.isArray(data.object) ? data.object : []))
+    .catch(err => console.error("Failed to fetch autos:", err));
+}, [selectedCustomerId]);
+
 
   
     useEffect(() => {
@@ -283,71 +307,124 @@ export default function ViewCustomers() {
                   <div className="mt-6">
                     <h3 className="font-semibold mb-2">Create {selectedSection === 'home' ? 'Home' : 'Auto'} Quote</h3>
                     <form
-                      className="space-y-4"
-                      onSubmit={(e) => {
-                        e.preventDefault()
-                        console.log('Submit quote data:', quoteFormData)
-                        alert('Quote created (not hooked up yet)')
-                      }}
-                    >
-                      {selectedSection === 'home' ? (
-                        <>
-                          <div>
-                            <label className="block text-sm">Liability ($)</label>
-                            <input
-                              type="number"
-                              className="w-full border px-2 py-1 rounded"
-                              name="liability"
-                              value={quoteFormData.liability}
-                              onChange={(e) => setQuoteFormData({ ...quoteFormData, liability: e.target.value })}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm">Packaged Quote?</label>
-                            <select
-                              className="w-full border px-2 py-1 rounded"
-                              value={quoteFormData.packagedQuote}
-                              onChange={(e) => setQuoteFormData({ ...quoteFormData, packagedQuote: e.target.value === 'true' })}
-                            >
-                              <option value="false">No</option>
-                              <option value="true">Yes</option>
-                            </select>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div>
-                            <label className="block text-sm">Make</label>
-                            <input
-                              className="w-full border px-2 py-1 rounded"
-                              name="make"
-                              value={quoteFormData.make}
-                              onChange={(e) => setQuoteFormData({ ...quoteFormData, make: e.target.value })}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm">Model</label>
-                            <input
-                              className="w-full border px-2 py-1 rounded"
-                              name="model"
-                              value={quoteFormData.model}
-                              onChange={(e) => setQuoteFormData({ ...quoteFormData, model: e.target.value })}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm">Year</label>
-                            <input
-                              type="number"
-                              className="w-full border px-2 py-1 rounded"
-                              name="year"
-                              value={quoteFormData.year}
-                              onChange={(e) => setQuoteFormData({ ...quoteFormData, year: e.target.value })}
-                            />
-                          </div>
-                        </>
-                      )}
-                      <Button type="submit">Submit Quote</Button>
-                    </form>
+  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+  onSubmit={async (e) => {
+    e.preventDefault();
+    if (!selectedCustomerId) return;
+
+    if (selectedSection === 'home') {
+      const { homeId, liability } = quoteFormData;
+      const packagedQuote = false;
+
+      if (!homeId || !liability) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `http://localhost:8080/v1/home_quotes/${selectedCustomerId}/${homeId}?liability=${liability}&packagedQuote=${packagedQuote}`,
+          { method: "POST" }
+        );
+        const data = await res.json();
+        if (data.success) {
+          alert("Home quote created!");
+          window.location.reload();
+
+        } else {
+          alert(data.message || "Failed to create quote.");
+        }
+      } catch (err) {
+        console.error("Home quote error:", err);
+        alert("Something went wrong.");
+      }
+    }
+
+    if (selectedSection === 'auto') {
+      const { autoId } = quoteFormData;
+      const packagedQuote = false;
+
+      if (!autoId) {
+        alert("Please select a vehicle.");
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `http://localhost:8080/v1/auto_quotes/${selectedCustomerId}/${autoId}?packagedQuote=${packagedQuote}`,
+          { method: "POST" }
+        );
+        const data = await res.json();
+        if (data.success) {
+          alert("Auto quote created!");
+          window.location.reload();
+        } else {
+          alert(data.message || "Failed to create quote.");
+        }
+      } catch (err) {
+        console.error("Auto quote error:", err);
+        alert("Something went wrong.");
+      }
+    }
+  }}
+>
+  {selectedSection === "home" ? (
+    <>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Select Home</label>
+        <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, homeId: val }))}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Choose a home" />
+          </SelectTrigger>
+          <SelectContent>
+            {homes.map((home) => (
+              <SelectItem key={home.id} value={home.id.toString()}>
+                {home.address.unit}-{home.address.street}, {home.address.city}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Liability</label>
+        <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, liability: val }))}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select liability" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1000000">$1,000,000</SelectItem>
+            <SelectItem value="2000000">$2,000,000</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </>
+  ) : (
+    <>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Select Vehicle</label>
+        <Select onValueChange={(val) => setQuoteFormData((prev) => ({ ...prev, autoId: val }))}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Choose a vehicle" />
+          </SelectTrigger>
+          <SelectContent>
+            {autos.map((auto) => (
+              <SelectItem key={auto.id} value={auto.id.toString()}>
+                {auto.year} {auto.make} {auto.model}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </>
+  )}
+
+  <div className="col-span-full">
+    <Button type="submit" className="w-full h-[50px] text-lg font-semibold mt-4">
+      Create Quote
+    </Button>
+  </div>
+</form>
+
                   </div>
                 )}
 
