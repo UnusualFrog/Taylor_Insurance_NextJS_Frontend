@@ -15,13 +15,16 @@ export default function GetQuote() {
   const [customerId, setCustomerId] = useState("")
   const [homes, setHomes] = useState([]);
   const [autos, setAutos] = useState([]);
+  const [userRole, setUserRole] = useState('');
 
 
   useEffect(() => {
     const loggedin = Cookies.get('loggedin') === 'true'
     const customer = Cookies.get('customerId');
+    const role = Cookies.get('role')
     setIsLoggedIn(loggedin)
     setCustomerId(customer)
+    setUserRole(role)
     setCheckedAuth(true)
   }, [])
 
@@ -131,6 +134,20 @@ useEffect(() => {
       </div>
     )
   }
+
+  if (userRole === 'employee') {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center px-4">
+        <Card className="bg-white/90 max-w-md shadow-lg p-6">
+          <CardTitle className="text-xl text-gray-800">Customer Access Only</CardTitle>
+          <p className="mt-4 text-gray-600">
+            You must be logged in on a <strong>customer account</strong> to get a quote.
+          </p>
+        </Card>
+      </div>
+    )
+  }
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">

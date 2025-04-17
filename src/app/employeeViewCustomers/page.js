@@ -156,13 +156,13 @@ export default function ViewCustomers() {
               </div>
 
               <div className="flex gap-2 flex-wrap mb-2">
-                <Button onClick={() => setViewMode('policies')} className={viewMode === 'policies' ? 'border-2 border-blue-600' : ''}>
+                <Button onClick={() => setViewMode('policies')} className={viewMode === 'policies' ? 'border-2 border-[#001F3F] bg-blue-800 shadow-md' : ''}>
                   View Policies
                 </Button>
-                <Button onClick={() => setViewMode('quotes')} className={viewMode === 'quotes' ? 'border-2 border-blue-600' : ''}>
+                <Button onClick={() => setViewMode('quotes')} className={viewMode === 'quotes' ? 'border-2 border-[#001F3F] bg-blue-800 shadow-md' : ''}>
                   View Quotes
                 </Button>
-                <Button onClick={() => setViewMode('create')} className={viewMode === 'create' ? 'border-2 border-blue-600' : ''}>
+                <Button onClick={() => setViewMode('create')} className={viewMode === 'create' ? 'border-2 border-[#001F3F] bg-blue-800 shadow-md' : ''}>
                   Create Quote
                 </Button>
 
@@ -170,10 +170,10 @@ export default function ViewCustomers() {
               </div>
 
               <div className="flex gap-2 flex-wrap mb-4">
-                <Button onClick={() => setSelectedSection('home')} className={selectedSection === 'home' ? 'border-2 border-blue-600' : ''}>
+                <Button onClick={() => setSelectedSection('home')} className={selectedSection === 'home' ? 'border-2 border-[#001F3F] bg-blue-800 shadow-md' : ''}>
                   Home
                 </Button>
-                <Button onClick={() => setSelectedSection('auto')} className={selectedSection === 'auto' ? 'border-2 border-blue-600' : ''}>
+                <Button onClick={() => setSelectedSection('auto')} className={selectedSection === 'auto' ? 'border-2 border-[#001F3F] bg-blue-800 shadow-md' : ''}>
                   Auto
                 </Button>
               </div>

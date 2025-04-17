@@ -60,6 +60,7 @@ export default function Account() {
   const [username, setUsername] = useState('')
   const [customerId, setCustomerId] = useState('')
   const [checkedAuth, setCheckedAuth] = useState(false)
+  const [userRole, setUserRole] = useState('');
 
   // Function to fetch homes data
   const fetchHomes = useCallback(() => {
@@ -85,8 +86,10 @@ export default function Account() {
     const loggedin = Cookies.get('loggedin') === 'true'
     const user = Cookies.get('username')
     const id = Cookies.get('customerId')
+    const role = Cookies.get('role');
 
     if (loggedin && user && id) {
+      setUserRole(role)
       setIsLoggedIn(true)
       setUsername(user)
       setCustomerId(id)
@@ -297,13 +300,28 @@ export default function Account() {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center">
-        <div>
-          <h1 className="text-2xl font-bold">You're not logged in.</h1>
-          <p className="mt-2 text-gray-600">
-            Please <a href="/loginRegister" className="text-blue-500 underline">log in</a> or <a href="/loginRegister" className="text-blue-500 underline">register</a>.
+      <div className="min-h-screen flex items-center justify-center text-center px-4">
+        <Card className="bg-white/90 max-w-md shadow-lg p-6">
+          <CardTitle className="text-xl text-gray-800">Login Required</CardTitle>
+          <p className="mt-4 text-gray-600">
+            You must be logged in to view your account. Please{" "}
+            <a href="/loginRegister" className="text-blue-600 underline">log in</a> or{" "}
+            <a href="/loginRegister" className="text-blue-600 underline">register</a>.
           </p>
-        </div>
+        </Card>
+      </div>
+    )
+  }
+  
+  if (userRole === 'employee') {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center px-4">
+        <Card className="bg-white/90 max-w-md shadow-lg p-6">
+          <CardTitle className="text-xl text-gray-800">Customer Account Only</CardTitle>
+          <p className="mt-4 text-gray-600">
+            You must be logged in on a <strong>customer account</strong> to access account info.
+          </p>
+        </Card>
       </div>
     )
   }
