@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 
 export default function Contact() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4 pt-24">
+
       <Card className="w-full max-w-lg bg-white/90 shadow-xl rounded-xl">
         <CardHeader className="text-center pt-6">
           <CardTitle className="text-2xl text-gray-800">Contact Us</CardTitle>

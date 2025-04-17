@@ -12,9 +12,24 @@ export default function EmployeePortalDashboard() {
   const [username, setUsername] = useState('')
 
   useEffect(() => {
-    const storedUsername = Cookies.get('username')
-    if (storedUsername) setUsername(storedUsername)
-  }, [])
+    const loggedIn = Cookies.get('loggedin') === 'true'
+    const role = Cookies.get('role')
+    const username = Cookies.get('username')
+  
+    if (!loggedIn) {
+      router.push('/employeeLogIn')
+      return
+    }
+  
+    if (role !== 'employee') {
+      router.push('/unauthorized')
+      return
+    }
+  
+    if (username) {
+      setUsername(username)
+    }
+  }, [router])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">
