@@ -1,5 +1,4 @@
 'use client'
-
 import { use, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,6 +9,7 @@ export default function QuoteDetails({ params }) {
   const { id } = use(params)
   const searchParams = useSearchParams()
   const type = searchParams.get("type") // expects 'auto' or 'home'
+  const referrer = searchParams.get("referrer") // new param to track where we came from
   const [quoteData, setQuoteData] = useState(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -37,7 +37,6 @@ export default function QuoteDetails({ params }) {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     const effectiveDate = tomorrow.toISOString().split('T')[0]
-
     const endDate = new Date()
     endDate.setFullYear(endDate.getFullYear() + 2)
     const formattedEnd = endDate.toISOString().split('T')[0]
@@ -50,7 +49,12 @@ export default function QuoteDetails({ params }) {
 
     if (data.success) {
       alert("Quote successfully activated!")
-      router.push("/account")
+      // Redirect based on referrer
+      if (referrer === 'employeeView') {
+        router.push("/employeeViewCustomers")
+      } else {
+        router.push("/account")
+      }
     } else {
       alert(data.message || "Activation failed.")
     }
@@ -81,7 +85,17 @@ export default function QuoteDetails({ params }) {
           <Button onClick={handleActivate} className="mt-4">
             Activate Quote
           </Button>
-          <Button onClick={() => router.push(`/account`)} className="mt-4">
+          <Button
+            onClick={() => {
+              // Return based on referrer
+              if (referrer === 'employeeView') {
+                router.push("/employeeViewCustomers")
+              } else {
+                router.push("/account")
+              }
+            }}
+            className="mt-4"
+          >
             Return
           </Button>
         </CardContent>

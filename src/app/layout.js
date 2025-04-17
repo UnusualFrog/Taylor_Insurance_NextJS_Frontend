@@ -8,6 +8,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation'; // Import this
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -26,6 +27,8 @@ export default function RootLayout({ children }) {
     { name: 'Account', href: 'account', current: false },
     { name: 'Contact', href: 'contact', current: false },
   ]);
+
+  const pathname = usePathname();
 
   useEffect(() => {
     // Check user authentication status from cookies
@@ -47,16 +50,25 @@ export default function RootLayout({ children }) {
 
     if (loggedInStatus) {
       if (userRoleValue === 'employee') {
-        updatedNavigation.push({ name: 'Employee Portal', href: 'employeePortal', current: false });
+        updatedNavigation.push({
+          name: 'Employee Portal',
+          href: 'employeePortal',
+          current: pathname === '/employeePortal'
+        });
       }
 
       if (adminStatus) {
-        updatedNavigation.push({ name: 'Admin Portal', href: 'adminPortal', current: false });
+        updatedNavigation.push({
+          name: 'Admin Portal',
+          href: 'adminPortal',
+          current: pathname === '/adminPortal'
+        });
       }
     }
 
+
     setNavigation(updatedNavigation);
-  }, []);
+  }, [pathname]);
 
   return (
     <html lang="en">
