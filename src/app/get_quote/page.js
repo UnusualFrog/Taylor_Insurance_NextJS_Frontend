@@ -124,8 +124,8 @@ useEffect(() => {
           <CardTitle className="text-xl text-gray-800">Login Required</CardTitle>
           <p className="mt-4 text-gray-600">
             You must be logged in to get a quote. Please{" "}
-            <a href="/login" className="text-blue-600 underline">log in</a> or{" "}
-            <a href="/register" className="text-blue-600 underline">register</a>.
+            <a href="/loginRegister" className="text-blue-600 underline">log in</a> or{" "}
+            <a href="/loginRegister" className="text-blue-600 underline">register</a>.
           </p>
         </Card>
       </div>

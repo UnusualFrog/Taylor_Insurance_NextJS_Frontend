@@ -132,7 +132,7 @@ export default function LoginRegister() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4 mt-4">
       <Card className="w-full max-w-3xl bg-white/90 shadow-xl rounded-xl">
         <CardHeader className="flex flex-col items-center pt-6">
           <Image

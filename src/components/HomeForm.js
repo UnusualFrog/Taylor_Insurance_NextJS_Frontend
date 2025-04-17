@@ -92,8 +92,10 @@ export default function HomeForm({ mode = 'create', homeData = {}, customerId, o
       <Select value={form.heatingType} onValueChange={(val) => setForm(prev => ({ ...prev, heatingType: val }))}>
         <SelectTrigger><SelectValue placeholder="Heating Type" /></SelectTrigger>
         <SelectContent>
-          <SelectItem value="OIL">Oil</SelectItem>
-          <SelectItem value="WOOD">Wood</SelectItem>
+          <SelectItem value="OIL_HEATING">Oil</SelectItem>
+          <SelectItem value="WOOD_HEATING">Wood</SelectItem>
+          <SelectItem value="ELECTRIC_HEATING">Electric</SelectItem>
+          <SelectItem value="GAS_HEATING">Gas</SelectItem>
           <SelectItem value="OTHER_HEATING">Other</SelectItem>
         </SelectContent>
       </Select>
