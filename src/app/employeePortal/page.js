@@ -18,7 +18,7 @@ export default function EmployeePortalDashboard() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 px-4">
-      <Card className="w-full max-w-3xl bg-white/90 shadow-xl rounded-xl">
+      <Card className="w-full max-w-4xl bg-white/90 shadow-xl rounded-xl">
         <CardHeader className="flex flex-col items-center pt-6">
           <Avatar className="h-20 w-20 mb-4">
             <AvatarImage src="/TInsurance-landing-logo.png" />
@@ -37,6 +37,9 @@ export default function EmployeePortalDashboard() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button className="w-full sm:w-auto" onClick={() => router.push('/employeeViewCustomers')}>
               View Customer Quotes & Policies
+            </Button>
+            <Button className="w-full sm:w-auto" onClick={() => router.push('/employeeResetCustomerPassword')}>
+              Reset a Customers Password
             </Button>
             <Button className="w-full sm:w-auto" onClick={() => router.push('/employeeCreateCustomers')}>
               Create New Customer
