@@ -41,7 +41,11 @@ export default function EmployeePortalDashboard() {
             <Button className="w-full sm:w-auto" onClick={() => router.push('/employeeCreateCustomers')}>
               Create New Customer
             </Button>
+            <Button className="w-full sm:w-auto" onClick={() => router.push('/employeeReports')}>
+              Run Report
+            </Button>
           </div>
+
         </CardContent>
       </Card>
     </div>
