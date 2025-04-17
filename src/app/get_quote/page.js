@@ -185,11 +185,18 @@ useEffect(() => {
                     <SelectValue placeholder="Choose your home" />
                   </SelectTrigger>
                   <SelectContent>
-                    {homes.map((home) => (
-                      <SelectItem key={home.id} value={home.id.toString()}>
-                        {home.address.unit}-{home.address.street}, {home.address.city}
+                    {homes.length > 0 ? (
+                      homes.map((home) => (
+                        <SelectItem key={home.id} value={home.id.toString()}>
+                          {home.address.unit}-{home.address.street}, {home.address.city}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem disabled value="no-home" className="text-gray-500 italic">
+                        No homes found. Go to <a href="/account" className="text-blue-600 underline">Account</a> to add one.
                       </SelectItem>
-                    ))}
+                    )}
+
                   </SelectContent>
                 </Select>
               </div>
@@ -222,11 +229,18 @@ useEffect(() => {
                       <SelectValue placeholder="Choose your vehicle" />
                     </SelectTrigger>
                     <SelectContent>
-                      {autos.map((auto) => (
+                    {autos.length > 0 ? (
+                      autos.map((auto) => (
                         <SelectItem key={auto.id} value={auto.id.toString()}>
                           {auto.year} {auto.make} {auto.model}
                         </SelectItem>
-                      ))}
+                      ))
+                    ) : (
+                      <SelectItem disabled value="no-auto" className="text-gray-500 italic">
+                        No vehicles found. Go to <a href="/account" className="text-blue-600 underline">Account</a> to add one.
+                      </SelectItem>
+                    )}
+
                     </SelectContent>
                   </Select>
                 </div>
