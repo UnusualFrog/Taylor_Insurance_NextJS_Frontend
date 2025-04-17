@@ -34,7 +34,7 @@ export default function PolicyDetails({ params }) {
   }, [id, type])
 
   const handleRenew = async () => {
-    alert('good job you renewed');
+    // alert('good job you renewed');
     const endDate = new Date()
     endDate.setFullYear(endDate.getFullYear() + 2)
     const formattedEnd = endDate.toISOString().split('T')[0]
@@ -68,7 +68,7 @@ export default function PolicyDetails({ params }) {
         <CardContent className="space-y-4 text-gray-800">
           <p><strong>ID:</strong> {quoteData.id}</p>
           <p><strong>Premium:</strong> ${quoteData.premium?.toFixed(2)}</p>
-          <p><strong>Generated:</strong> {quoteData.generationDate}</p>
+          <p><strong>Effective:</strong> {quoteData.effectiveDate}</p>
 
           {type === "auto" && quoteData.auto && (
             <p><strong>Vehicle:</strong> {quoteData.auto.year} {quoteData.auto.make} {quoteData.auto.model}</p>
@@ -80,6 +80,9 @@ export default function PolicyDetails({ params }) {
 
           <Button onClick={handleRenew} className="mt-4">
             Renew Policy
+          </Button>
+          <Button onClick={() => router.push(`/account`)} className="mt-4">
+            Return
           </Button>
         </CardContent>
       </Card>

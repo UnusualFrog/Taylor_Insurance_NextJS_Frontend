@@ -35,6 +35,24 @@ export default function Account() {
   const [showAddHome, setShowAddHome] = useState(false)
   const [showAddAuto, setShowAddAuto] = useState(false)
 
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    confirmPassword: '',
+    firstName: '',
+    lastName: '',
+    birthday: '',
+    email: '',
+    unit: '',
+    street: '',
+    city: '',
+    province: '',
+    postalCode: ''
+  })
+
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState(false)
+
   const router = useRouter()
 
   // check for and handle user log in
@@ -84,6 +102,23 @@ export default function Account() {
         .then(response => response.json())
         .then(data => {
           setCustomerData(data.object)
+          // Update formData AFTER we have customerData
+          if (data.object) {
+            setFormData({
+              username: data.object.username || '',
+              password: data.object.password || '',
+              confirmPassword: data.object.password || '',
+              firstName: data.object.firstName || '',
+              lastName: data.object.lastName || '',
+              birthday: data.object.birthday || '',
+              email: data.object.email || '',
+              unit: data.object.address?.unit || '',
+              street: data.object.address?.street || '',
+              city: data.object.address?.city || '',
+              province: data.object.address?.province || '',
+              postalCode: data.object.address?.postalCode || ''
+            })
+          }
         })
         .catch(error => console.error('Error fetching customer data:', error))
 
@@ -184,6 +219,78 @@ export default function Account() {
     fetchAutos() // Refetch autos data
   }
 
+  const handleChangeAccountUpdate = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmitAccountUpdate = async (e) => {
+    e.preventDefault()
+
+    try {
+      if (!customerData || !customerData.address) {
+        setError(true);
+        setMessage("Customer data is not loaded yet. Please try again.");
+        return;
+      }
+
+      // Step 1: Update address
+      const addressUrl = new URL(`http://localhost:8080/v1/addresses/${customerData.address.id}`)
+      addressUrl.searchParams.append("unit", formData.unit || 0)
+      addressUrl.searchParams.append("street", formData.street)
+      addressUrl.searchParams.append("city", formData.city)
+      addressUrl.searchParams.append("province", formData.province)
+      addressUrl.searchParams.append("postalCode", formData.postalCode)
+
+      const addressRes = await fetch(addressUrl.toString(), {
+        method: "PUT"
+      })
+      const addressResponseData = await addressRes.json()
+
+      if (addressResponseData.success) {
+        setError(false)
+        setMessage("Address updated successfully!")
+      } else {
+        setError(true)
+        setMessage(addressResponseData.message || "Address update failed.")
+      }
+
+      // Step 2: Update customer
+      const customerUrl = new URL(`http://localhost:8080/v1/customers/${customerId}`)
+      customerUrl.searchParams.append("firstName", formData.firstName)
+      customerUrl.searchParams.append("lastName", formData.lastName)
+      customerUrl.searchParams.append("birthday", formData.birthday)
+      customerUrl.searchParams.append("email", formData.email)
+      customerUrl.searchParams.append("username", formData.username)
+      customerUrl.searchParams.append("password", formData.password)
+      customerUrl.searchParams.append("addressId", customerData.address.id)
+
+      const customerRes = await fetch(customerUrl.toString(), {
+        method: "PUT"
+      })
+      const customerResponseData = await customerRes.json()
+
+      if (customerResponseData.success) {
+        setError(false)
+        setMessage("Customer updated successfully!")
+        // Don't clear the form after success - keep the current values
+        // Instead fetch the latest customer data
+        fetch(`http://localhost:8080/v1/customers/${customerId}`)
+          .then(response => response.json())
+          .then(data => {
+            setCustomerData(data.object)
+          })
+          .catch(error => console.error('Error refreshing customer data:', error))
+      } else {
+        setError(true)
+        setMessage(customerResponseData.message || "Customer update failed.")
+      }
+    } catch (err) {
+      console.error("Error updating customer:", err)
+      setError(true)
+      setMessage("Something went wrong. Please try again.")
+    }
+  }
+
   if (!checkedAuth) {
     return <div>Loading...</div>
   }
@@ -246,44 +353,35 @@ export default function Account() {
           {/* Main Panel */}
           <div className="w-full">
             {selectedSection === "info" && customerData && (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4">Account Info</h2>
+              <CardContent className="px-6 pb-8">
+                <form onSubmit={handleSubmitAccountUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Input name="username" placeholder="Username" value={formData.username} onChange={handleChangeAccountUpdate} required readOnly />
+                  <Input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChangeAccountUpdate} required readOnly />
+                  {/* <Input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChangeAccountUpdate} required />
+                  <Input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChangeAccountUpdate} required /> */}
+                  <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChangeAccountUpdate} required />
+                  <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChangeAccountUpdate} required />
+                  <Input type="date" name="birthday" value={formData.birthday} onChange={handleChangeAccountUpdate} required className="col-span-full" />
 
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Full Name</label>
-                  <div className="border rounded-md px-3 py-2 bg-white text-gray-800">
-                    {customerData.firstName} {customerData.lastName}
-                  </div>
-                </div>
+                  <div className="col-span-full font-semibold">Address Info</div>
+                  <Input name="unit" placeholder="Unit" value={formData.unit} onChange={handleChangeAccountUpdate} />
+                  <Input name="street" placeholder="Street" value={formData.street} onChange={handleChangeAccountUpdate} required />
+                  <Input name="city" placeholder="City" value={formData.city} onChange={handleChangeAccountUpdate} required />
+                  <Input name="province" placeholder="Province" value={formData.province} onChange={handleChangeAccountUpdate} required />
+                  <Input name="postalCode" placeholder="Postal Code" value={formData.postalCode} onChange={handleChangeAccountUpdate} required />
 
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Username</label>
-                  <div className="border rounded-md px-3 py-2 bg-white text-gray-800">
-                    {customerData.username}
+                  <div className="col-span-full">
+                    <Button type="submit" className="w-full h-[50px] text-lg font-semibold">
+                      Update Information
+                    </Button>
+                    {message && (
+                      <p className={`text-center mt-2 ${error ? 'text-red-600' : 'text-green-600'}`}>
+                        {message}
+                      </p>
+                    )}
                   </div>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Email</label>
-                  <div className="border rounded-md px-3 py-2 bg-white text-gray-800">
-                    {customerData.email}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Birth Date</label>
-                  <div className="border rounded-md px-3 py-2 bg-white text-gray-800">
-                    {customerData.birthday}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Address</label>
-                  <div className="border rounded-md px-3 py-2 bg-white text-gray-800">
-                    {customerData.address.unit}, {customerData.address.street}, {customerData.address.city}, {customerData.address.province}, {customerData.address.postalCode}
-                  </div>
-                </div>
-              </div>
+                </form>
+              </CardContent>
             )}
             {selectedSection === "password" && (
               <form

@@ -32,11 +32,11 @@ export default function RootLayout({ children }) {
     const loggedInStatus = Cookies.get('loggedin') === 'true';
     const userRoleValue = Cookies.get('role');
     const adminStatus = Cookies.get('isAdmin') === 'true';
-    
+
     setIsLoggedIn(loggedInStatus);
     setUserRole(userRoleValue);
     setIsAdmin(adminStatus);
-    
+
     // Update navigation based on user status
     let updatedNavigation = [
       { name: 'Home', href: '/', current: false },
@@ -44,17 +44,17 @@ export default function RootLayout({ children }) {
       { name: 'Account', href: 'account', current: false },
       { name: 'Contact', href: 'contact', current: false },
     ];
-    
+
     if (loggedInStatus) {
       if (userRoleValue === 'employee') {
         updatedNavigation.push({ name: 'Employee Portal', href: 'employeePortal', current: false });
       }
-      
+
       if (adminStatus) {
         updatedNavigation.push({ name: 'Admin Portal', href: 'adminPortal', current: false });
       }
     }
-    
+
     setNavigation(updatedNavigation);
   }, []);
 
@@ -79,10 +79,10 @@ export default function RootLayout({ children }) {
                     <img
                       alt="Your Company"
                       src="favicon.ico"
-                      className="h-8 w-auto"
+                      className="h-16 w-auto"
                     />
                   </div>
-                  <div className="hidden sm:ml-6 sm:block">
+                  <div className="hidden sm:ml-6 sm:flex items-center">
                     <div className="flex space-x-4">
                       {navigation.map((item) => (
                         <a

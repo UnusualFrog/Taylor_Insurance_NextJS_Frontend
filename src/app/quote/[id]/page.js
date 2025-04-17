@@ -81,6 +81,9 @@ export default function QuoteDetails({ params }) {
           <Button onClick={handleActivate} className="mt-4">
             Activate Quote
           </Button>
+          <Button onClick={() => router.push(`/account`)} className="mt-4">
+            Return
+          </Button>
         </CardContent>
       </Card>
     </div>
