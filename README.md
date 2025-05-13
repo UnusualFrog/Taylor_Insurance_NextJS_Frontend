@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Taylor Insurance React Frontend
 
-First, run the development server:
+A Mock React Frontend for the website of the hypothetical insurance company Taylor Insurance. 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Built with Next.JS and Tailwind CSS in VSCode
+
+Connects with the following backend's API to perform CRUD operations relating the users, insuarble entities (home & auto), quotes, policies, etc.
+
+**Backend**: https://github.com/UnusualFrog/Taylor_Insurance_Spring_Backend/
+
+
+## Setup
+
+Once the repo is cloned, run the following to install all neccesary packages:
+
+```
+  npm i
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then build and run the app with:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```
+ npm run build
+ npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+or run in debug mode with:
 
-## Learn More
+```
+ npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage/Examples
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The website features an account system. Users will need to first register before a password is created. Passwords are automatically hashed with SHA-256 encryption. Once a customer account is created, the customer may log in and view their account details.
 
-## Deploy on Vercel
+From the account page customers can view and manage their personal information and update their password. Customers can add home or auto entities to their account from the accounts page. Once an entity is added
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Screenshots
+
+### Main Area
+
+![App Screenshot](Screenshots/1.png)
+
+![App Screenshot](Screenshots/7.png)
+
+### Account Area
+
+![App Screenshot](Screenshots/2.png)
+
+![App Screenshot](Screenshots/3.png)
+
+![App Screenshot](Screenshots/4.png)
+
+![App Screenshot](Screenshots/5.png)
+
+![App Screenshot](Screenshots/6.png)
+
+### Employee Area
+
+![App Screenshot](Screenshots/8.png)
+
+![App Screenshot](Screenshots/9.png)
+
+![App Screenshot](Screenshots/10.png)
+
+![App Screenshot](Screenshots/11.png)
+
+![App Screenshot](Screenshots/12.png)
+
+![App Screenshot](Screenshots/13.png)
+
